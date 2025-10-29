@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import IdeaCard from '../components/IdeaCard';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { Search, TrendingUp, Clock } from 'lucide-react';
+import { Search, TrendingUp, Clock, Users, Filter } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -13,6 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '../components/ui/popover';
+import { Checkbox } from '../components/ui/checkbox';
+import { Badge } from '../components/ui/badge';
+import { Avatar, AvatarFallback } from '../components/ui/avatar';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const [ideas, setIdeas] = useState([]);
