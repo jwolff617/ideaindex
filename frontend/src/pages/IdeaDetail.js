@@ -227,8 +227,8 @@ const IdeaDetail = () => {
     setCommenting(true);
     try {
       await axios.post(
-        `${API}/ideas/${id}/comments?body=${encodeURIComponent(commentBody)}`,
-        {},
+        `${API}/ideas/${id}/comments`,
+        { body: commentBody },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
