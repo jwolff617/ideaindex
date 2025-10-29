@@ -56,8 +56,8 @@ const Home = () => {
     try {
       const params = new URLSearchParams();
       if (searchQuery) params.append('q', searchQuery);
-      if (selectedCategory) params.append('category', selectedCategory);
-      if (selectedCity) params.append('city', selectedCity);
+      if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
+      if (selectedCity && selectedCity !== 'all') params.append('city', selectedCity);
       params.append('sort', sortBy);
 
       const response = await axios.get(`${API}/ideas?${params.toString()}`);
