@@ -61,8 +61,8 @@ const Comment = ({ comment, depth = 0, onUpdate }) => {
     setReplying(true);
     try {
       await axios.post(
-        `${API}/ideas/${comment.id}/comments?body=${encodeURIComponent(replyBody)}`,
-        {},
+        `${API}/ideas/${comment.id}/comments`,
+        { body: replyBody },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
