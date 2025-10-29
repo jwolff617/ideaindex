@@ -446,8 +446,11 @@ async def get_comments_recursive(parent_id: str, depth: int = 0, max_depth: int 
     
     return comments
 
+class CommentCreate(BaseModel):
+    body: str = Field(..., min_length=1)
+
 @api_router.post("/ideas/{idea_id}/comments")
-async def create_comment(idea_id: str, body: str = Field(..., min_length=1), user: User = Depends(check_email_verified)):
+async def create_comment(idea_id: str, comment_data: CommentCreate, user: User = Depends(check_email_verified)):
     parent = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
     if not parent:
         raise HTTPException(status_code=404, detail="Parent idea not found")
@@ -455,7 +458,7 @@ async def create_comment(idea_id: str, body: str = Field(..., min_length=1), use
     comment = Idea(
         author_id=user.id,
         parent_id=idea_id,
-        body=body
+        body=comment_data.body
     )
     
     comment_dict = comment.model_dump()
