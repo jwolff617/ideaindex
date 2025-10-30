@@ -31,6 +31,7 @@ const SubmitIdea = () => {
     geo_lon: null
   });
   const [submitting, setSubmitting] = useState(false);
+  const [locationType, setLocationType] = useState('none'); // 'none', 'city', 'specific'
 
   useEffect(() => {
     if (!user) {
