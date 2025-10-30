@@ -179,27 +179,110 @@ const SubmitIdea = () => {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              <div>
-                <Label htmlFor="city">City</Label>
-                <Select
-                  value={formData.city_id}
-                  onValueChange={(value) => setFormData({ ...formData, city_id: value })}
-                >
-                  <SelectTrigger className="mt-1" data-testid="city-select">
-                    <SelectValue placeholder="Select a city" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cities.map((city) => (
-                      <SelectItem key={city.id} value={city.id}>
-                        <div className="flex items-center space-x-2">
-                          <MapPin size={14} />
-                          <span>{city.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div>
+              <Label className="mb-3 block">Location (optional)</Label>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="location-none"
+                    name="location"
+                    value="none"
+                    checked={locationType === 'none'}
+                    onChange={(e) => handleLocationTypeChange(e.target.value)}
+                    className="w-4 h-4 text-emerald-600 cursor-pointer"
+                  />
+                  <label htmlFor="location-none" className="text-sm cursor-pointer">
+                    No specific location
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="location-city"
+                    name="location"
+                    value="city"
+                    checked={locationType === 'city'}
+                    onChange={(e) => handleLocationTypeChange(e.target.value)}
+                    className="w-4 h-4 text-emerald-600 cursor-pointer"
+                  />
+                  <label htmlFor="location-city" className="text-sm cursor-pointer">
+                    Select a city
+                  </label>
+                </div>
+
+                {locationType === 'city' && (
+                  <div className="ml-6">
+                    <Select
+                      value={formData.city_id}
+                      onValueChange={handleCitySelect}
+                    >
+                      <SelectTrigger data-testid="city-select">
+                        <SelectValue placeholder="Choose a city" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cities.map((city) => (
+                          <SelectItem key={city.id} value={city.id}>
+                            <div className="flex items-center space-x-2">
+                              <MapPin size={14} />
+                              <span>{city.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="location-specific"
+                    name="location"
+                    value="specific"
+                    checked={locationType === 'specific'}
+                    onChange={(e) => handleLocationTypeChange(e.target.value)}
+                    className="w-4 h-4 text-emerald-600 cursor-pointer"
+                  />
+                  <label htmlFor="location-specific" className="text-sm cursor-pointer">
+                    Specific address (enter coordinates)
+                  </label>
+                </div>
+
+                {locationType === 'specific' && (
+                  <div className="ml-6 grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="lat" className="text-xs">Latitude</Label>
+                      <Input
+                        id="lat"
+                        type="number"
+                        step="any"
+                        placeholder="e.g. 41.8781"
+                        value={formData.geo_lat || ''}
+                        onChange={(e) => setFormData({ ...formData, geo_lat: parseFloat(e.target.value) || null })}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lon" className="text-xs">Longitude</Label>
+                      <Input
+                        id="lon"
+                        type="number"
+                        step="any"
+                        placeholder="e.g. -87.6298"
+                        value={formData.geo_lon || ''}
+                        onChange={(e) => setFormData({ ...formData, geo_lon: parseFloat(e.target.value) || null })}
+                        className="mt-1"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 col-span-2">
+                      Tip: Get coordinates from <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="text-emerald-600 underline">Google Maps</a>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
