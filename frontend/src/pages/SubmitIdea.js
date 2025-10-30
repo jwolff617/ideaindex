@@ -68,6 +68,27 @@ const SubmitIdea = () => {
     }
   };
 
+  const handleLocationTypeChange = (type) => {
+    setLocationType(type);
+    if (type === 'none') {
+      setFormData({ ...formData, city_id: '', geo_lat: null, geo_lon: null });
+    } else if (type === 'specific') {
+      setFormData({ ...formData, city_id: '' });
+    }
+  };
+
+  const handleCitySelect = (cityId) => {
+    const city = cities.find(c => c.id === cityId);
+    if (city) {
+      setFormData({
+        ...formData,
+        city_id: cityId,
+        geo_lat: city.lat,
+        geo_lon: city.lon
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
