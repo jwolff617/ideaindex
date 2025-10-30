@@ -43,7 +43,9 @@ function App() {
     localStorage.setItem('token', newToken);
     setToken(newToken);
     setUser(userData);
-    toast.success('Welcome back!');
+    if (userData.is_verified_email) {
+      toast.success('Welcome back!');
+    }
   };
 
   const logout = () => {
