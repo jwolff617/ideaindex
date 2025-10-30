@@ -296,6 +296,12 @@ async def verify_email(token: str):
     
     return {"message": "Email verified successfully"}
 
+@api_router.post("/verify-email-auto")
+async def verify_email_auto(user: User = Depends(get_current_user)):
+    """Auto-verify email for MVP - bypass token requirement"""
+    await db.users.update_one({"id": user.id}, {"$set": {"is_verified_email": True}})
+    return {"message": "Email verified successfully"}
+
 @api_router.get("/me")
 async def get_me(user: User = Depends(get_current_user)):
     return user
