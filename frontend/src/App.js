@@ -59,6 +59,29 @@ function App() {
     <AuthContext.Provider value={{ user, token, login, logout, setShowAuthModal }}>
       <div className="App">
         <BrowserRouter>
+          {user && !user.is_verified_email && (
+            <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center" data-testid="verification-banner">
+              <p className="text-amber-800 text-sm">
+                📧 <strong>Email verification needed!</strong> Check backend console logs for your verification link, or{' '}
+                <button
+                  onClick={async () => {
+                    try {
+                      await axios.post(`${API}/verify-email-auto`, {}, {
+                        headers: { Authorization: `Bearer ${token}` }
+                      });
+                      await fetchUser();
+                      toast.success('Email verified! You can now post ideas.');
+                    } catch (error) {
+                      toast.error('Failed to verify email');
+                    }
+                  }}
+                  className="underline font-semibold hover:text-amber-900"
+                >
+                  click here to auto-verify (MVP only)
+                </button>
+              </p>
+            </div>
+          )}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/ideas/:id" element={<IdeaDetail />} />
