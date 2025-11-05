@@ -927,6 +927,24 @@ async def vote_idea(idea_id: str, vote_data: VoteRequest, user: User = Depends(c
     # Check for swap promotion
     await swap_promotion_check(idea_id)
     
+    # Create notification for idea author on upvote (throttle to avoid spam)
+    if vote_data.vote == 1 and not existing_vote:
+        idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+        if idea and idea['author_id'] != user.id:
+            # Only notify on milestones to reduce noise: 1, 5, 10, 25, 50, 100, etc.
+            new_count = idea['upvotes'] + 1
+            milestones = [1, 5, 10, 25, 50, 100, 250, 500, 1000]
+            if new_count in milestones:
+                idea_title = idea.get('title', 'your idea')
+                await create_notification(
+                    user_id=idea['author_id'],
+                    notif_type="upvote",
+                    title=f"Your idea reached {new_count} upvotes!",
+                    body=f'"{idea_title}" is gaining traction',
+                    link=f"/ideas/{idea_id}",
+                    from_user_id=None
+                )
+    
     updated_idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
     return {"upvotes": updated_idea['upvotes'], "downvotes": updated_idea['downvotes']}
 
