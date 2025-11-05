@@ -408,7 +408,7 @@ const IdeaDetail = () => {
 
                         {/* Reply form */}
                         {replyToId === idea.id && (
-                          <div className="mt-4 space-y-2 bg-white p-4 rounded-lg border border-gray-200">
+                          <div className="mt-4 space-y-3 bg-white p-4 rounded-lg border border-gray-200">
                             <Textarea
                               placeholder="Share your idea..."
                               value={replyBody}
@@ -417,6 +417,48 @@ const IdeaDetail = () => {
                               rows={3}
                               data-testid="reply-textarea"
                             />
+                            
+                            {/* Image Upload */}
+                            <div>
+                              <label
+                                htmlFor={`reply-images-${idea.id}`}
+                                className="flex items-center justify-center px-3 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-emerald-500 transition-colors text-sm"
+                              >
+                                <ImageIcon size={16} className="mr-2 text-gray-400" />
+                                <span className="text-gray-600">Add images</span>
+                                <input
+                                  id={`reply-images-${idea.id}`}
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  onChange={handleReplyImageSelect}
+                                  className="hidden"
+                                />
+                              </label>
+                            </div>
+
+                            {/* Image Previews */}
+                            {replyImagePreviews.length > 0 && (
+                              <div className="grid grid-cols-3 gap-2">
+                                {replyImagePreviews.map((preview, index) => (
+                                  <div key={index} className="relative group">
+                                    <img
+                                      src={preview}
+                                      alt={`Preview ${index + 1}`}
+                                      className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => removeReplyImage(index)}
+                                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                      <X size={12} />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
                             <div className="flex space-x-2">
                               <Button
                                 size="sm"
@@ -432,6 +474,8 @@ const IdeaDetail = () => {
                                 onClick={() => {
                                   setReplyToId(null);
                                   setReplyBody('');
+                                  setReplyImages([]);
+                                  setReplyImagePreviews([]);
                                 }}
                               >
                                 Cancel
