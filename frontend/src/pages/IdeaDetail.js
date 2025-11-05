@@ -153,13 +153,17 @@ const IdeaDetail = () => {
       return;
     }
 
-    if (!replyBody.trim()) return;
+    // Require either body text or images
+    if (!replyBody.trim() && replyImages.length === 0) {
+      toast.error('Please add some text or an image');
+      return;
+    }
 
     setReplying(true);
     try {
       // Create FormData for multipart upload
       const formData = new FormData();
-      formData.append('body', replyBody);
+      formData.append('body', replyBody || ' '); // Send space if empty but has images
       
       // Add images
       replyImages.forEach(image => {
