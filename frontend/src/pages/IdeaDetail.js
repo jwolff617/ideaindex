@@ -366,19 +366,21 @@ const IdeaDetail = () => {
                         {/* Attached Images */}
                         {idea.attachments && idea.attachments.length > 0 && (
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-                            {idea.attachments.map((attachment, idx) => (
-                              <img
-                                key={idx}
-                                src={`${process.env.REACT_APP_BACKEND_URL}${attachment}`}
-                                alt={`Image ${idx + 1}`}
-                                className="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-                                onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${attachment}`, '_blank')}
-                                onError={(e) => {
-                                  console.error('Failed to load image:', `${process.env.REACT_APP_BACKEND_URL}${attachment}`);
-                                  e.target.style.display = 'none';
-                                }}
-                              />
-                            ))}
+                            {idea.attachments.map((attachment, idx) => {
+                              const imageUrl = attachment.startsWith('http') ? attachment : `${window.location.origin}${attachment}`;
+                              return (
+                                <img
+                                  key={idx}
+                                  src={imageUrl}
+                                  alt={`Image ${idx + 1}`}
+                                  className="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                                  onClick={() => window.open(imageUrl, '_blank')}
+                                  onError={(e) => {
+                                    console.error('Failed to load image:', imageUrl);
+                                  }}
+                                />
+                              );
+                            })}
                           </div>
                         )}
 
