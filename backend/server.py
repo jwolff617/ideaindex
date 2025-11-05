@@ -141,6 +141,26 @@ class ModerationReport(BaseModel):
     status: str = "new"  # new, under_review, actioned
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class Bookmark(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    idea_id: str
+    collection: Optional[str] = None  # Optional collection name
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Notification(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    type: str  # "comment", "upvote", "mention", "reply"
+    title: str
+    body: str
+    link: Optional[str] = None
+    from_user_id: Optional[str] = None
+    read: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # ============ Helper Functions ============
 
 def create_jwt_token(user_id: str, email: str) -> str:
