@@ -246,6 +246,9 @@ const IdeaDetail = () => {
               const indentLevel = getIndentLevel(index);
               const marginLeft = indentLevel * 40; // 40px per level
               const isMainIdea = idea.id === mainIdea.id;
+              const userVote = userVotes[idea.id]; // 1, -1, or undefined
+              const hasUpvoted = userVote === 1;
+              const hasDownvoted = userVote === -1;
 
               return (
                 <div
@@ -268,20 +271,30 @@ const IdeaDetail = () => {
                       <div className="flex flex-col items-center space-y-1 flex-shrink-0">
                         <button
                           onClick={() => handleVote(idea.id, 1)}
-                          className="p-2 rounded-lg hover:bg-emerald-50 text-gray-400 hover:text-emerald-600 transition-colors"
+                          className={`p-2 rounded-lg transition-colors ${
+                            hasUpvoted 
+                              ? 'bg-emerald-100 text-emerald-600' 
+                              : 'hover:bg-emerald-50 text-gray-400 hover:text-emerald-600'
+                          }`}
                           data-testid="upvote-button"
+                          title={hasUpvoted ? 'Remove upvote' : 'Upvote this idea'}
                         >
-                          <ArrowUp size={18} />
+                          <ArrowUp size={18} className={hasUpvoted ? 'fill-current' : ''} />
                         </button>
                         <span className="font-bold text-lg text-emerald-600" data-testid="upvote-count">
                           {idea.upvotes}
                         </span>
                         <button
                           onClick={() => handleVote(idea.id, -1)}
-                          className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                          className={`p-2 rounded-lg transition-colors ${
+                            hasDownvoted 
+                              ? 'bg-red-100 text-red-600' 
+                              : 'hover:bg-red-50 text-gray-400 hover:text-red-600'
+                          }`}
                           data-testid="downvote-button"
+                          title={hasDownvoted ? 'Remove downvote' : 'Downvote this idea'}
                         >
-                          <ArrowDown size={18} />
+                          <ArrowDown size={18} className={hasDownvoted ? 'fill-current' : ''} />
                         </button>
                       </div>
 
