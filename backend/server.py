@@ -527,6 +527,68 @@ async def search_tags(q: str):
     
     return sorted(list(matching_tags))[:20]
 
+# ============ Notifications ============
+
+async def create_notification(user_id: str, notif_type: str, title: str, body: str, link: str = None, from_user_id: str = None):
+    """Helper to create a notification"""
+    notification = Notification(
+        user_id=user_id,
+        type=notif_type,
+        title=title,
+        body=body,
+        link=link,
+        from_user_id=from_user_id
+    )
+    
+    notif_dict = notification.model_dump()
+    notif_dict['created_at'] = notif_dict['created_at'].isoformat()
+    await db.notifications.insert_one(notif_dict)
+
+@api_router.get("/notifications")
+async def get_notifications(unread_only: bool = False, limit: int = 50, user: User = Depends(get_current_user)):
+    """Get user's notifications"""
+    query = {"user_id": user.id}
+    if unread_only:
+        query["read"] = False
+    
+    notifications = await db.notifications.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Enrich with from_user info
+    for notif in notifications:
+        if isinstance(notif.get('created_at'), str):
+            notif['created_at'] = datetime.fromisoformat(notif['created_at'])
+        
+        if notif.get('from_user_id'):
+            from_user = await db.users.find_one({"id": notif['from_user_id']}, {"_id": 0, "password_hash": 0, "id": 1, "name": 1, "username": 1, "avatar_url": 1})
+            if from_user:
+                notif['from_user'] = from_user
+    
+    return notifications
+
+@api_router.get("/notifications/unread-count")
+async def get_unread_count(user: User = Depends(get_current_user)):
+    """Get count of unread notifications"""
+    count = await db.notifications.count_documents({"user_id": user.id, "read": False})
+    return {"count": count}
+
+@api_router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, user: User = Depends(get_current_user)):
+    """Mark notification as read"""
+    await db.notifications.update_one(
+        {"id": notification_id, "user_id": user.id},
+        {"$set": {"read": True}}
+    )
+    return {"message": "Marked as read"}
+
+@api_router.post("/notifications/mark-all-read")
+async def mark_all_read(user: User = Depends(get_current_user)):
+    """Mark all notifications as read"""
+    await db.notifications.update_many(
+        {"user_id": user.id, "read": False},
+        {"$set": {"read": True}}
+    )
+    return {"message": "All marked as read"}
+
 # ============ Ideas Routes ============
 
 @api_router.get("/ideas")
