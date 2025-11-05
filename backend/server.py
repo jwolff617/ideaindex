@@ -302,6 +302,28 @@ async def verify_email_auto(user: User = Depends(get_current_user)):
     await db.users.update_one({"id": user.id}, {"$set": {"is_verified_email": True}})
     return {"message": "Email verified successfully"}
 
+@api_router.post("/reset-password")
+async def reset_password(email: EmailStr, new_password: str):
+    """Reset password for MVP - no email verification needed"""
+    user_data = await db.users.find_one({"email": email}, {"_id": 0})
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Hash new password
+    password_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    
+    await db.users.update_one(
+        {"email": email},
+        {"$set": {"password_hash": password_hash}}
+    )
+    
+    print(f"\n=== PASSWORD RESET ===\")
+    print(f\"Email: {email}\")
+    print(f\"New password has been set\")
+    print(f\"=====================\\n\")
+    
+    return {"message": "Password reset successfully"}
+
 @api_router.get("/me")
 async def get_me(user: User = Depends(get_current_user)):
     return user
