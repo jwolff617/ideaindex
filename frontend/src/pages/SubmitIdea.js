@@ -28,7 +28,8 @@ const SubmitIdea = () => {
     category_id: '',
     city_id: '',
     geo_lat: null,
-    geo_lon: null
+    geo_lon: null,
+    tags: ''  // Comma-separated tags
   });
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
