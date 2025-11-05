@@ -64,6 +64,7 @@ const Navbar = () => {
                     Post Idea
                   </Button>
                 </Link>
+                <NotificationCenter />
                 <DropdownMenu>
                   <DropdownMenuTrigger data-testid="user-menu-trigger">
                     <Avatar className="cursor-pointer ring-2 ring-emerald-500/20 hover:ring-emerald-500/40 transition-all">
