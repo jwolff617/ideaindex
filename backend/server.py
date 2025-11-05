@@ -411,10 +411,11 @@ async def get_ideas(
     q: Optional[str] = None,
     category: Optional[List[str]] = Query(None),
     city: Optional[str] = None,
+    tags: Optional[str] = None,  # Comma-separated tags
     lat: Optional[float] = None,
     lon: Optional[float] = None,
     radius: Optional[float] = None,
-    sort: str = "top",
+    sort: str = "hot",  # hot, top, new, rising
     page: int = 1,
     per_page: int = 20
 ):
@@ -424,23 +425,53 @@ async def get_ideas(
         query["$or"] = [{"title": {"$regex": q, "$options": "i"}}, {"body": {"$regex": q, "$options": "i"}}]
     
     if category and len(category) > 0:
-        # Support multiple categories
         query["category_id"] = {"$in": category}
     
     if city:
         query["city_id"] = city
     
+    if tags:
+        tag_list = [t.strip().lower() for t in tags.split(',')]
+        query["tags"] = {"$in": tag_list}
+    
     if lat and lon and radius:
-        # Simple radius search (not using geospatial index for MVP)
         query["geo_lat"] = {"$exists": True}
         query["geo_lon"] = {"$exists": True}
     
-    sort_key = "upvotes" if sort == "top" else "created_at"
-    sort_order = -1
+    # Sorting algorithm
+    if sort == "new":
+        sort_key = "created_at"
+        sort_order = -1
+    elif sort == "top":
+        sort_key = "upvotes"
+        sort_order = -1
+    elif sort == "rising":
+        # Rising: ideas from last 24h sorted by upvotes
+        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+        query["created_at"] = {"$gte": yesterday.isoformat()}
+        sort_key = "upvotes"
+        sort_order = -1
+    else:  # hot (default)
+        # Hot algorithm: score based on votes and age
+        # We'll fetch all and sort in memory for simplicity
+        sort_key = "created_at"
+        sort_order = -1
     
     skip = (page - 1) * per_page
     
-    ideas = await db.ideas.find(query, {"_id": 0}).sort(sort_key, sort_order).skip(skip).limit(per_page).to_list(per_page)
+    ideas = await db.ideas.find(query, {"_id": 0}).sort(sort_key, sort_order).skip(skip).limit(per_page * 3).to_list(per_page * 3)
+    
+    # Calculate hot score if needed
+    if sort == "hot":
+        now = datetime.now(timezone.utc)
+        for idea in ideas:
+            created = datetime.fromisoformat(idea['created_at']) if isinstance(idea['created_at'], str) else idea['created_at']
+            age_hours = (now - created).total_seconds() / 3600
+            score = (idea['upvotes'] - idea['downvotes']) / ((age_hours + 2) ** 1.5)
+            idea['_hot_score'] = score
+        
+        ideas.sort(key=lambda x: x.get('_hot_score', 0), reverse=True)
+        ideas = ideas[:per_page]
     
     # Enrich with author and category info
     for idea in ideas:
@@ -466,6 +497,10 @@ async def get_ideas(
             city_obj = await db.cities.find_one({"id": idea['city_id']}, {"_id": 0})
             if city_obj:
                 idea['city'] = city_obj['name']
+        
+        # Remove hot score from response
+        if '_hot_score' in idea:
+            del idea['_hot_score']
     
     total = await db.ideas.count_documents(query)
     
