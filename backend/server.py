@@ -560,15 +560,41 @@ class CommentCreate(BaseModel):
     body: str = Field(..., min_length=1)
 
 @api_router.post("/ideas/{idea_id}/comments")
-async def create_comment(idea_id: str, comment_data: CommentCreate, user: User = Depends(check_email_verified)):
+async def create_comment(
+    idea_id: str,
+    body: str = None,
+    images: List[UploadFile] = File(None),
+    user: User = Depends(check_email_verified)
+):
     parent = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
     if not parent:
         raise HTTPException(status_code=404, detail="Parent idea not found")
     
+    if not body or len(body.strip()) == 0:
+        raise HTTPException(status_code=400, detail="Body is required")
+    
+    # Handle image uploads
+    attachments = []
+    if images:
+        for image in images:
+            if image.filename:
+                # Generate unique filename
+                file_extension = image.filename.split('.')[-1]
+                unique_filename = f"{uuid.uuid4()}.{file_extension}"
+                file_path = UPLOADS_DIR / unique_filename
+                
+                # Save file
+                with file_path.open('wb') as buffer:
+                    shutil.copyfileobj(image.file, buffer)
+                
+                # Store relative URL
+                attachments.append(f"/uploads/{unique_filename}")
+    
     comment = Idea(
         author_id=user.id,
         parent_id=idea_id,
-        body=comment_data.body
+        body=body,
+        attachments=attachments
     )
     
     comment_dict = comment.model_dump()
