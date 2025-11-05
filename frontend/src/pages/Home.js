@@ -41,6 +41,7 @@ const Home = () => {
   useEffect(() => {
     fetchCategories();
     fetchCities();
+    fetchTrendingTags();
   }, []);
 
   useEffect(() => {
