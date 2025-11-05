@@ -230,7 +230,15 @@ const AuthModal = ({ onClose }) => {
           </Button>
         </form>
 
-        <div className="p-6 pt-0 text-center">
+        <div className="p-6 pt-0 space-y-2 text-center">
+          {isLogin && (
+            <button
+              onClick={() => setShowForgotPassword(true)}
+              className="text-sm text-gray-600 hover:text-gray-800 font-medium block w-full"
+            >
+              Forgot password?
+            </button>
+          )}
           <button
             onClick={() => setIsLogin(!isLogin)}
             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -239,6 +247,8 @@ const AuthModal = ({ onClose }) => {
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
           </button>
         </div>
+          </>
+        )}
       </div>
     </div>
   );
