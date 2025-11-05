@@ -703,7 +703,7 @@ async def create_idea(
     geo_lat: Optional[float] = None,
     geo_lon: Optional[float] = None,
     tags: Optional[str] = None,  # Comma-separated tags
-    images: List[UploadFile] = File(None),
+    images: List[UploadFile] = File(default=[]),
     user: User = Depends(check_email_verified)
 ):
     if not title:
@@ -712,19 +712,21 @@ async def create_idea(
     if not body or len(body) < 10:
         raise HTTPException(status_code=400, detail="Body must be at least 10 characters")
     
+    # Filter out empty/null images
+    valid_images = [img for img in images if img and img.filename]
+    
     # Handle image uploads
     attachments = []
-    if images:
-        for image in images:
-            if image.filename:
-                file_extension = image.filename.split('.')[-1]
-                unique_filename = f"{uuid.uuid4()}.{file_extension}"
-                file_path = UPLOADS_DIR / unique_filename
-                
-                with file_path.open('wb') as buffer:
-                    shutil.copyfileobj(image.file, buffer)
-                
-                attachments.append(f"/uploads/{unique_filename}")
+    if valid_images:
+        for image in valid_images:
+            file_extension = image.filename.split('.')[-1]
+            unique_filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = UPLOADS_DIR / unique_filename
+            
+            with file_path.open('wb') as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            
+            attachments.append(f"/uploads/{unique_filename}")
     
     # Parse tags
     tags_list = []
