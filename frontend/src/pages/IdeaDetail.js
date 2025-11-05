@@ -370,9 +370,13 @@ const IdeaDetail = () => {
                               <img
                                 key={idx}
                                 src={`${process.env.REACT_APP_BACKEND_URL}${attachment}`}
-                                alt="Attached image"
+                                alt={`Image ${idx + 1}`}
                                 className="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${attachment}`, '_blank')}
+                                onError={(e) => {
+                                  console.error('Failed to load image:', `${process.env.REACT_APP_BACKEND_URL}${attachment}`);
+                                  e.target.style.display = 'none';
+                                }}
                               />
                             ))}
                           </div>
