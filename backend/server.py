@@ -482,6 +482,7 @@ async def create_idea(
     city_id: Optional[str] = None,
     geo_lat: Optional[float] = None,
     geo_lon: Optional[float] = None,
+    tags: Optional[str] = None,  # Comma-separated tags
     images: List[UploadFile] = File(None),
     user: User = Depends(check_email_verified)
 ):
@@ -496,17 +497,19 @@ async def create_idea(
     if images:
         for image in images:
             if image.filename:
-                # Generate unique filename
                 file_extension = image.filename.split('.')[-1]
                 unique_filename = f"{uuid.uuid4()}.{file_extension}"
                 file_path = UPLOADS_DIR / unique_filename
                 
-                # Save file
                 with file_path.open('wb') as buffer:
                     shutil.copyfileobj(image.file, buffer)
                 
-                # Store relative URL
                 attachments.append(f"/uploads/{unique_filename}")
+    
+    # Parse tags
+    tags_list = []
+    if tags:
+        tags_list = [t.strip().lower() for t in tags.split(',') if t.strip()]
     
     idea = Idea(
         author_id=user.id,
@@ -516,7 +519,8 @@ async def create_idea(
         city_id=city_id,
         geo_lat=geo_lat,
         geo_lon=geo_lon,
-        attachments=attachments
+        attachments=attachments,
+        tags=tags_list
     )
     
     idea_dict = idea.model_dump()
