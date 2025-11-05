@@ -125,6 +125,15 @@ const IdeaCard = ({ idea, onUpdate }) => {
                 <span>{idea.city}</span>
               </Badge>
             )}
+            {idea.tags && idea.tags.map((tag, idx) => (
+              <Badge
+                key={idx}
+                variant="outline"
+                className="text-xs text-blue-600 border-blue-300 hover:bg-blue-50 cursor-pointer"
+              >
+                #{tag}
+              </Badge>
+            ))}
           </div>
 
           <div className="flex items-center justify-between text-sm text-gray-500">
@@ -146,9 +155,36 @@ const IdeaCard = ({ idea, onUpdate }) => {
               </span>
             </Link>
 
-            <div className="flex items-center space-x-1 text-gray-500" data-testid="comments-count">
-              <MessageCircle size={16} />
-              <span>{idea.comments_count || 0}</span>
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-1 text-gray-500" data-testid="comments-count">
+                <MessageCircle size={16} />
+                <span>{idea.comments_count || 0}</span>
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2"
+                onClick={handleBookmark}
+                disabled={bookmarking}
+                data-testid="bookmark-button"
+              >
+                {isBookmarked ? (
+                  <BookmarkCheck size={16} className="text-emerald-600" />
+                ) : (
+                  <Bookmark size={16} />
+                )}
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2"
+                onClick={handleShare}
+                data-testid="share-button"
+              >
+                <Share2 size={16} />
+              </Button>
             </div>
           </div>
         </div>
