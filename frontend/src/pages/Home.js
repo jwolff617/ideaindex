@@ -357,8 +357,46 @@ const Home = () => {
                 <IdeaCard key={idea.id} idea={idea} onUpdate={fetchIdeas} />
               ))}
             </div>
-          )
+          </div>
         )}
+      </div>
+      
+      {/* Sidebar */}
+      <div className="lg:col-span-1">
+        {/* Trending Tags */}
+        {trendingTags.length > 0 && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 sticky top-20">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+              <TrendingUp size={18} className="text-emerald-600" />
+              <span>Trending Tags</span>
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {trendingTags.map((tagData) => (
+                <Badge
+                  key={tagData.tag}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-emerald-50 border-emerald-300 text-emerald-700"
+                  onClick={() => {
+                    // TODO: Filter by tag
+                    setSearchQuery(`#${tagData.tag}`);
+                  }}
+                >
+                  #{tagData.tag} <span className="ml-1 text-xs text-gray-500">({tagData.count})</span>
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Quick Stats */}
+        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg">
+          <h3 className="font-bold mb-4">Ideas grow here</h3>
+          <p className="text-sm text-emerald-50">
+            Every idea competes equally. The best thinking rises to the top through transparent voting.
+          </p>
+        </div>
+      </div>
+    </div>
       </div>
     </div>
   );
