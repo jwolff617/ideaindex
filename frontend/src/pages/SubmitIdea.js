@@ -30,6 +30,8 @@ const SubmitIdea = () => {
     geo_lat: null,
     geo_lon: null
   });
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [locationType, setLocationType] = useState('none'); // 'none', 'city', 'specific'
 
