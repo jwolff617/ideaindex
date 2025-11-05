@@ -72,6 +72,15 @@ const Home = () => {
     }
   };
 
+  const fetchTrendingTags = async () => {
+    try {
+      const response = await axios.get(`${API}/tags/trending?limit=10`);
+      setTrendingTags(response.data);
+    } catch (error) {
+      console.error('Failed to fetch trending tags', error);
+    }
+  };
+
   const fetchIdeas = async () => {
     setLoading(true);
     try {
