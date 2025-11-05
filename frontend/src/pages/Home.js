@@ -21,10 +21,11 @@ import {
 import { Checkbox } from '../components/ui/checkbox';
 import { Badge } from '../components/ui/badge';
 import { Avatar, AvatarFallback } from '../components/ui/avatar';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
 const Home = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [ideas, setIdeas] = useState([]);
   const [leaders, setLeaders] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -32,7 +33,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || 'all');
   const [sortBy, setSortBy] = useState('top');
   const [showType, setShowType] = useState('ideas'); // 'ideas' or 'leaders'
 
