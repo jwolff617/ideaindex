@@ -344,6 +344,44 @@ async def get_my_votes(idea_ids: str, user: User = Depends(get_current_user)):
     
     return votes
 
+@api_router.get("/url-preview")
+async def get_url_preview(url: str):
+    """Fetch Open Graph metadata for URL preview"""
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(url, follow_redirects=True)
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Could not fetch URL")
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Extract Open Graph tags
+            og_title = soup.find('meta', property='og:title')
+            og_description = soup.find('meta', property='og:description')
+            og_image = soup.find('meta', property='og:image')
+            
+            # Fallback to regular meta tags
+            title = og_title['content'] if og_title else (soup.find('title').text if soup.find('title') else urlparse(url).netloc)
+            description = og_description['content'] if og_description else (soup.find('meta', attrs={'name': 'description'})['content'] if soup.find('meta', attrs={'name': 'description'}) else '')
+            image = og_image['content'] if og_image else None
+            
+            return {
+                'url': url,
+                'title': title[:200] if title else url,
+                'description': description[:300] if description else '',
+                'image': image,
+                'domain': urlparse(url).netloc
+            }
+    except Exception as e:
+        return {
+            'url': url,
+            'title': urlparse(url).netloc,
+            'description': '',
+            'image': None,
+            'domain': urlparse(url).netloc
+        }
+
 # ============ Ideas Routes ============
 
 @api_router.get("/ideas")
