@@ -404,6 +404,129 @@ async def get_url_preview(url: str):
             'domain': urlparse(url).netloc
         }
 
+# ============ Bookmarks ============
+
+@api_router.post("/bookmarks")
+async def bookmark_idea(idea_id: str, collection: Optional[str] = None, user: User = Depends(get_current_user)):
+    """Save/bookmark an idea"""
+    # Check if already bookmarked
+    existing = await db.bookmarks.find_one({"user_id": user.id, "idea_id": idea_id}, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="Already bookmarked")
+    
+    bookmark = Bookmark(
+        user_id=user.id,
+        idea_id=idea_id,
+        collection=collection
+    )
+    
+    bookmark_dict = bookmark.model_dump()
+    bookmark_dict['created_at'] = bookmark_dict['created_at'].isoformat()
+    await db.bookmarks.insert_one(bookmark_dict)
+    
+    # Increment saves count
+    await db.ideas.update_one({"id": idea_id}, {"$inc": {"saves_count": 1}})
+    
+    return {"message": "Bookmarked successfully"}
+
+@api_router.delete("/bookmarks/{idea_id}")
+async def unbookmark_idea(idea_id: str, user: User = Depends(get_current_user)):
+    """Remove bookmark"""
+    result = await db.bookmarks.delete_one({"user_id": user.id, "idea_id": idea_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bookmark not found")
+    
+    # Decrement saves count
+    await db.ideas.update_one({"id": idea_id}, {"$inc": {"saves_count": -1}})
+    
+    return {"message": "Bookmark removed"}
+
+@api_router.get("/bookmarks")
+async def get_my_bookmarks(collection: Optional[str] = None, user: User = Depends(get_current_user)):
+    """Get user's bookmarks"""
+    query = {"user_id": user.id}
+    if collection:
+        query["collection"] = collection
+    
+    bookmarks = await db.bookmarks.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    
+    # Fetch full idea data
+    idea_ids = [b['idea_id'] for b in bookmarks]
+    ideas = await db.ideas.find({"id": {"$in": idea_ids}}, {"_id": 0}).to_list(1000)
+    
+    # Enrich ideas
+    for idea in ideas:
+        if isinstance(idea.get('created_at'), str):
+            idea['created_at'] = datetime.fromisoformat(idea['created_at'])
+        if isinstance(idea.get('updated_at'), str):
+            idea['updated_at'] = datetime.fromisoformat(idea['updated_at'])
+        
+        author = await db.users.find_one({"id": idea['author_id']}, {"_id": 0, "password_hash": 0})
+        if author:
+            if isinstance(author.get('created_at'), str):
+                author['created_at'] = datetime.fromisoformat(author['created_at'])
+            if isinstance(author.get('updated_at'), str):
+                author['updated_at'] = datetime.fromisoformat(author['updated_at'])
+            idea['author'] = author
+    
+    return ideas
+
+@api_router.get("/bookmarks/collections")
+async def get_my_collections(user: User = Depends(get_current_user)):
+    """Get user's bookmark collections"""
+    bookmarks = await db.bookmarks.find({"user_id": user.id}, {"_id": 0}).to_list(1000)
+    
+    collections = {}
+    for bookmark in bookmarks:
+        coll_name = bookmark.get('collection') or 'Uncategorized'
+        if coll_name not in collections:
+            collections[coll_name] = 0
+        collections[coll_name] += 1
+    
+    return [{"name": name, "count": count} for name, count in collections.items()]
+
+# ============ Tags & Trending ============
+
+@api_router.get("/tags/trending")
+async def get_trending_tags(limit: int = 20):
+    """Get trending tags"""
+    # Aggregate tags from recent ideas (last 7 days)
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    
+    ideas = await db.ideas.find({
+        "created_at": {"$gte": week_ago.isoformat()},
+        "tags": {"$exists": True, "$ne": []}
+    }, {"_id": 0, "tags": 1}).to_list(10000)
+    
+    # Count tag frequency
+    tag_counts = {}
+    for idea in ideas:
+        for tag in idea.get('tags', []):
+            tag_counts[tag] = tag_counts.get(tag, 0) + 1
+    
+    # Sort by count
+    trending = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:limit]
+    
+    return [{"tag": tag, "count": count} for tag, count in trending]
+
+@api_router.get("/tags/search")
+async def search_tags(q: str):
+    """Search for tags (autocomplete)"""
+    # Find ideas with tags matching query
+    ideas = await db.ideas.find({
+        "tags": {"$regex": f"^{q.lower()}", "$options": "i"}
+    }, {"_id": 0, "tags": 1}).to_list(1000)
+    
+    # Collect unique matching tags
+    matching_tags = set()
+    for idea in ideas:
+        for tag in idea.get('tags', []):
+            if tag.lower().startswith(q.lower()):
+                matching_tags.add(tag)
+    
+    return sorted(list(matching_tags))[:20]
+
 # ============ Ideas Routes ============
 
 @api_router.get("/ideas")
