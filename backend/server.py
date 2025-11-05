@@ -317,10 +317,10 @@ async def reset_password(email: EmailStr, new_password: str):
         {"$set": {"password_hash": password_hash}}
     )
     
-    print(f"\n=== PASSWORD RESET ===\")
-    print(f\"Email: {email}\")
-    print(f\"New password has been set\")
-    print(f\"=====================\\n\")
+    print(f"\n=== PASSWORD RESET ===")
+    print(f"Email: {email}")
+    print(f"New password has been set")
+    print(f"=====================\n")
     
     return {"message": "Password reset successfully"}
 
