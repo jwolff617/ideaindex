@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
-import { ArrowUp, ArrowDown, MapPin, Calendar, MessageCircle, TrendingUp } from 'lucide-react';
+import { ArrowUp, ArrowDown, MapPin, Calendar, MessageCircle, TrendingUp, Image as ImageIcon, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { TextWithURLPreviews } from '../components/URLPreview';
 
