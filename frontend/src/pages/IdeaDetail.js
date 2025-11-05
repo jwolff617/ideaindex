@@ -312,9 +312,24 @@ const IdeaDetail = () => {
                         )}
 
                         {/* Body */}
-                        <p className="text-gray-700 mb-3 whitespace-pre-wrap" data-testid="idea-body">
-                          {idea.body}
-                        </p>
+                        <div className="mb-3">
+                          <TextWithURLPreviews text={idea.body} />
+                        </div>
+
+                        {/* Attached Images */}
+                        {idea.attachments && idea.attachments.length > 0 && (
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+                            {idea.attachments.map((attachment, idx) => (
+                              <img
+                                key={idx}
+                                src={`${process.env.REACT_APP_BACKEND_URL}${attachment}`}
+                                alt="Attached image"
+                                className="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                                onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${attachment}`, '_blank')}
+                              />
+                            ))}
+                          </div>
+                        )}
 
                         {/* Author and timestamp */}
                         <div className="flex items-center justify-between">
