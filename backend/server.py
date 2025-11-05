@@ -311,7 +311,7 @@ async def get_me(user: User = Depends(get_current_user)):
 @api_router.get("/ideas")
 async def get_ideas(
     q: Optional[str] = None,
-    category: Optional[str] = None,
+    category: Optional[List[str]] = None,
     city: Optional[str] = None,
     lat: Optional[float] = None,
     lon: Optional[float] = None,
@@ -325,8 +325,9 @@ async def get_ideas(
     if q:
         query["$or"] = [{"title": {"$regex": q, "$options": "i"}}, {"body": {"$regex": q, "$options": "i"}}]
     
-    if category:
-        query["category_id"] = category
+    if category and len(category) > 0:
+        # Support multiple categories
+        query["category_id"] = {"$in": category}
     
     if city:
         query["city_id"] = city
