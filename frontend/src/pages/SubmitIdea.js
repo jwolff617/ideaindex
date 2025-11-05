@@ -334,6 +334,22 @@ const SubmitIdea = () => {
               </div>
             </div>
 
+            {/* Tags */}
+            <div>
+              <Label htmlFor="tags">Tags (optional)</Label>
+              <Input
+                id="tags"
+                placeholder="e.g. sustainability, innovation, community (comma-separated)"
+                value={formData.tags}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                className="mt-1"
+                data-testid="tags-input"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Add tags to help others discover your idea
+              </p>
+            </div>
+
             {/* Image Upload */}
             <div>
               <Label htmlFor="images">Images (optional)</Label>
