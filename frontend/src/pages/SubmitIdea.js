@@ -332,6 +332,50 @@ const SubmitIdea = () => {
               </div>
             </div>
 
+            {/* Image Upload */}
+            <div>
+              <Label htmlFor="images">Images (optional)</Label>
+              <div className="mt-2">
+                <label
+                  htmlFor="images"
+                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-emerald-500 transition-colors"
+                >
+                  <ImageIcon size={20} className="mr-2 text-gray-400" />
+                  <span className="text-sm text-gray-600">Click to upload images</span>
+                  <input
+                    id="images"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              {/* Image Previews */}
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="pt-4 border-t">
               <Button
                 type="submit"
