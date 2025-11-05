@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { AuthContext, API } from '../App';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { ArrowUp, ArrowDown, MessageCircle, MapPin, Calendar } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageCircle, MapPin, Calendar, Bookmark, BookmarkCheck, Share2 } from 'lucide-react';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import { formatDistanceToNow } from 'date-fns';
 
 const IdeaCard = ({ idea, onUpdate }) => {
