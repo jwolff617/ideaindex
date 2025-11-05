@@ -157,14 +157,30 @@ const IdeaDetail = () => {
 
     setReplying(true);
     try {
+      // Create FormData for multipart upload
+      const formData = new FormData();
+      formData.append('body', replyBody);
+      
+      // Add images
+      replyImages.forEach(image => {
+        formData.append('images', image);
+      });
+
       await axios.post(
         `${API}/ideas/${parentId}/comments`,
-        { body: replyBody },
-        { headers: { Authorization: `Bearer ${token}` } }
+        formData,
+        { 
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          } 
+        }
       );
       
       toast.success('Idea posted!');
       setReplyBody('');
+      setReplyImages([]);
+      setReplyImagePreviews([]);
       setReplyToId(null);
       fetchIdea();
     } catch (error) {
@@ -172,6 +188,31 @@ const IdeaDetail = () => {
     } finally {
       setReplying(false);
     }
+  };
+
+  const handleReplyImageSelect = (e) => {
+    const files = Array.from(e.target.files);
+    const validImages = files.filter(file => file.type.startsWith('image/'));
+    
+    if (validImages.length !== files.length) {
+      toast.error('Only image files are allowed');
+    }
+    
+    setReplyImages(prev => [...prev, ...validImages]);
+    
+    // Create previews
+    validImages.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReplyImagePreviews(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeReplyImage = (index) => {
+    setReplyImages(prev => prev.filter((_, i) => i !== index));
+    setReplyImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   // Calculate indentation level based on position in sorted list
