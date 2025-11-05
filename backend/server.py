@@ -311,7 +311,7 @@ async def get_me(user: User = Depends(get_current_user)):
 @api_router.get("/ideas")
 async def get_ideas(
     q: Optional[str] = None,
-    category: Optional[List[str]] = None,
+    category: Optional[List[str]] = Query(None),
     city: Optional[str] = None,
     lat: Optional[float] = None,
     lon: Optional[float] = None,
