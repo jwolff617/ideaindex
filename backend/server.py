@@ -680,6 +680,31 @@ async def seed_data():
     
     return {"message": "Data seeded successfully"}
 
+@api_router.post("/backfill-coordinates")
+async def backfill_coordinates():
+    """Add coordinates to ideas that have city but missing geo data"""
+    ideas_without_coords = await db.ideas.find({
+        "city_id": {"$ne": None},
+        "$or": [
+            {"geo_lat": None},
+            {"geo_lon": None},
+            {"geo_lat": {"$exists": False}},
+            {"geo_lon": {"$exists": False}}
+        ]
+    }, {"_id": 0}).to_list(1000)
+    
+    updated_count = 0
+    for idea in ideas_without_coords:
+        city = await db.cities.find_one({"id": idea['city_id']}, {"_id": 0})
+        if city and city.get('lat') and city.get('lon'):
+            await db.ideas.update_one(
+                {"id": idea['id']},
+                {"$set": {"geo_lat": city['lat'], "geo_lon": city['lon']}}
+            )
+            updated_count += 1
+    
+    return {"message": f"Backfilled coordinates for {updated_count} ideas"}
+
 app.include_router(api_router)
 
 app.add_middleware(
