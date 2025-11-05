@@ -809,30 +809,32 @@ class CommentCreate(BaseModel):
 async def create_comment(
     idea_id: str,
     body: str = None,
-    images: List[UploadFile] = File(None),
+    images: List[UploadFile] = File(default=[]),
     user: User = Depends(check_email_verified)
 ):
     parent = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
     if not parent:
         raise HTTPException(status_code=404, detail="Parent idea not found")
     
+    # Filter out empty/null images
+    valid_images = [img for img in images if img and img.filename]
+    
     # Require either body or images
-    if (not body or len(body.strip()) == 0) and not images:
+    if (not body or len(body.strip()) == 0) and len(valid_images) == 0:
         raise HTTPException(status_code=400, detail="Please provide text or an image")
     
     # Handle image uploads
     attachments = []
-    if images:
-        for image in images:
-            if image.filename:
-                file_extension = image.filename.split('.')[-1]
-                unique_filename = f"{uuid.uuid4()}.{file_extension}"
-                file_path = UPLOADS_DIR / unique_filename
-                
-                with file_path.open('wb') as buffer:
-                    shutil.copyfileobj(image.file, buffer)
-                
-                attachments.append(f"/uploads/{unique_filename}")
+    if valid_images:
+        for image in valid_images:
+            file_extension = image.filename.split('.')[-1]
+            unique_filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = UPLOADS_DIR / unique_filename
+            
+            with file_path.open('wb') as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            
+            attachments.append(f"/uploads/{unique_filename}")
     
     # Use space if no body but has images
     final_body = body.strip() if body and body.strip() else "[Image]"
