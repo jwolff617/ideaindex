@@ -14,6 +14,11 @@ import jwt
 import bcrypt
 from fastapi.staticfiles import StaticFiles
 import math
+import shutil
+import re
+from urllib.parse import urlparse
+import httpx
+from bs4 import BeautifulSoup
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
