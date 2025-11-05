@@ -5,6 +5,8 @@ import Navbar from '../components/Navbar';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Link } from 'react-router-dom';
 import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { ChevronLeft, ChevronRight, ArrowUp, ExternalLink } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -39,6 +41,33 @@ const MapView = () => {
     }
   };
 
+  // Group ideas by location (lat, lon)
+  const groupIdeasByLocation = () => {
+    const grouped = {};
+    
+    ideas.forEach(idea => {
+      const key = `${idea.geo_lat.toFixed(2)},${idea.geo_lon.toFixed(2)}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          lat: idea.geo_lat,
+          lon: idea.geo_lon,
+          city: idea.city,
+          ideas: []
+        };
+      }
+      grouped[key].ideas.push(idea);
+    });
+
+    // Sort ideas within each location by upvotes (descending)
+    Object.values(grouped).forEach(location => {
+      location.ideas.sort((a, b) => b.upvotes - a.upvotes);
+    });
+
+    return Object.values(grouped);
+  };
+
+  const groupedLocations = groupIdeasByLocation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
       <Navbar />
@@ -69,23 +98,10 @@ const MapView = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {ideas.map((idea) => (
-                <Marker key={idea.id} position={[idea.geo_lat, idea.geo_lon]}>
-                  <Popup>
-                    <div className="p-2">
-                      <Link to={`/ideas/${idea.id}`} className="font-bold text-emerald-600 hover:text-emerald-700">
-                        {idea.title}
-                      </Link>
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{idea.body}</p>
-                      {idea.category && (
-                        <Badge className="mt-2 bg-emerald-50 text-emerald-700 text-xs">
-                          {idea.category}
-                        </Badge>
-                      )}
-                      <div className="text-xs text-gray-500 mt-2">
-                        {idea.upvotes} upvotes
-                      </div>
-                    </div>
+              {groupedLocations.map((location, idx) => (
+                <Marker key={idx} position={[location.lat, location.lon]}>
+                  <Popup maxWidth={400} maxHeight={500}>
+                    <LocationPopup location={location} />
                   </Popup>
                 </Marker>
               ))}
@@ -99,6 +115,101 @@ const MapView = () => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
+
+// Separate component for the popup content with pagination
+const LocationPopup = ({ location }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const ideasPerPage = 10;
+  const totalPages = Math.ceil(location.ideas.length / ideasPerPage);
+
+  const startIdx = (currentPage - 1) * ideasPerPage;
+  const endIdx = startIdx + ideasPerPage;
+  const currentIdeas = location.ideas.slice(startIdx, endIdx);
+
+  const getCityId = () => {
+    return location.ideas[0]?.city_id;
+  };
+
+  return (
+    <div className="py-2">
+      {/* Header */}
+      <div className="mb-3 pb-3 border-b border-gray-200">
+        <h3 className="font-bold text-lg text-gray-900">{location.city || 'Ideas'}</h3>
+        <p className="text-sm text-gray-500">{location.ideas.length} ideas at this location</p>
+      </div>
+
+      {/* Ideas List */}
+      <div className="space-y-3 max-h-80 overflow-y-auto">
+        {currentIdeas.map((idea, idx) => (
+          <div key={idea.id} className="pb-3 border-b border-gray-100 last:border-0">
+            <Link 
+              to={`/ideas/${idea.id}`}
+              className="block hover:bg-gray-50 -mx-2 px-2 py-1 rounded transition-colors"
+            >
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h4 className="font-semibold text-sm text-gray-900 hover:text-emerald-600 line-clamp-2">
+                  {idea.title}
+                </h4>
+                <div className="flex items-center space-x-1 text-emerald-600 flex-shrink-0">
+                  <ArrowUp size={14} />
+                  <span className="text-sm font-bold">{idea.upvotes}</span>
+                </div>
+              </div>
+              <p className="text-xs text-gray-600 line-clamp-2 mb-2">{idea.body}</p>
+              {idea.category && (
+                <Badge className="bg-emerald-50 text-emerald-700 text-xs">
+                  {idea.category}
+                </Badge>
+              )}
+            </Link>
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="h-8"
+          >
+            <ChevronLeft size={14} />
+          </Button>
+          
+          <span className="text-sm text-gray-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="h-8"
+          >
+            <ChevronRight size={14} />
+          </Button>
+        </div>
+      )}
+
+      {/* View All Link */}
+      {location.city && getCityId() && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <Link
+            to={`/?city=${getCityId()}`}
+            className="flex items-center justify-center space-x-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+          >
+            <span>View all {location.city} ideas</span>
+            <ExternalLink size={14} />
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
