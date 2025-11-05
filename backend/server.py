@@ -104,8 +104,10 @@ class Idea(BaseModel):
     geo_lat: Optional[float] = None
     geo_lon: Optional[float] = None
     attachments: List[str] = []
+    tags: List[str] = []  # Hashtags for discovery
     upvotes: int = 0
     downvotes: int = 0
+    saves_count: int = 0  # Bookmark count
     is_promoted: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
