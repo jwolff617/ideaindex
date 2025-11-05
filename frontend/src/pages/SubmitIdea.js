@@ -106,10 +106,29 @@ const SubmitIdea = () => {
 
     setSubmitting(true);
     try {
+      // Create FormData for multipart upload
+      const submitData = new FormData();
+      submitData.append('title', formData.title);
+      submitData.append('body', formData.body);
+      if (formData.category_id) submitData.append('category_id', formData.category_id);
+      if (formData.city_id) submitData.append('city_id', formData.city_id);
+      if (formData.geo_lat) submitData.append('geo_lat', formData.geo_lat);
+      if (formData.geo_lon) submitData.append('geo_lon', formData.geo_lon);
+      
+      // Add images
+      selectedImages.forEach(image => {
+        submitData.append('images', image);
+      });
+
       const response = await axios.post(
         `${API}/ideas`,
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        submitData,
+        { 
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          } 
+        }
       );
       
       toast.success('Idea posted successfully!');
@@ -119,6 +138,31 @@ const SubmitIdea = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleImageSelect = (e) => {
+    const files = Array.from(e.target.files);
+    const validImages = files.filter(file => file.type.startsWith('image/'));
+    
+    if (validImages.length !== files.length) {
+      toast.error('Only image files are allowed');
+    }
+    
+    setSelectedImages(prev => [...prev, ...validImages]);
+    
+    // Create previews
+    validImages.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
