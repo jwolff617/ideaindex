@@ -13,7 +13,9 @@ const IdeaCard = ({ idea, onUpdate }) => {
   const { user, token, setShowAuthModal } = useContext(AuthContext);
   const [upvotes, setUpvotes] = useState(idea.upvotes || 0);
   const [downvotes, setDownvotes] = useState(idea.downvotes || 0);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [voting, setVoting] = useState(false);
+  const [bookmarking, setBookmarking] = useState(false);
 
   const handleVote = async (voteValue) => {
     if (!user) {
