@@ -824,16 +824,13 @@ async def create_comment(
     if images:
         for image in images:
             if image.filename:
-                # Generate unique filename
                 file_extension = image.filename.split('.')[-1]
                 unique_filename = f"{uuid.uuid4()}.{file_extension}"
                 file_path = UPLOADS_DIR / unique_filename
                 
-                # Save file
                 with file_path.open('wb') as buffer:
                     shutil.copyfileobj(image.file, buffer)
                 
-                # Store relative URL
                 attachments.append(f"/uploads/{unique_filename}")
     
     comment = Idea(
@@ -849,6 +846,33 @@ async def create_comment(
     
     await db.ideas.insert_one(comment_dict)
     await db.ideas.update_one({"id": idea_id}, {"$inc": {"comments_count": 1}})
+    
+    # Create notification for parent idea author (if not self-comment)
+    if parent['author_id'] != user.id:
+        parent_title = parent.get('title', 'your idea')
+        await create_notification(
+            user_id=parent['author_id'],
+            notif_type="comment",
+            title=f"{user.name} commented on {parent_title}",
+            body=body[:100] + "..." if len(body) > 100 else body,
+            link=f"/ideas/{parent['id']}",
+            from_user_id=user.id
+        )
+    
+    # Check for @mentions in body
+    mention_pattern = r'@(\w+)'
+    mentions = re.findall(mention_pattern, body)
+    for username in set(mentions):
+        mentioned_user = await db.users.find_one({"username": username}, {"_id": 0})
+        if mentioned_user and mentioned_user['id'] != user.id:
+            await create_notification(
+                user_id=mentioned_user['id'],
+                notif_type="mention",
+                title=f"{user.name} mentioned you",
+                body=body[:100] + "..." if len(body) > 100 else body,
+                link=f"/ideas/{parent['id']}",
+                from_user_id=user.id
+            )
     
     return comment
 
