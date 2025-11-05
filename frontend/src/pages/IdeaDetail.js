@@ -16,6 +16,7 @@ const IdeaDetail = () => {
   const { user, token, setShowAuthModal } = useContext(AuthContext);
   const [mainIdea, setMainIdea] = useState(null);
   const [allIdeas, setAllIdeas] = useState([]); // Flat list of all ideas sorted by upvotes
+  const [userVotes, setUserVotes] = useState({}); // Track user's votes: { ideaId: 1 or -1 }
   const [loading, setLoading] = useState(true);
   const [replyToId, setReplyToId] = useState(null);
   const [replyBody, setReplyBody] = useState('');
