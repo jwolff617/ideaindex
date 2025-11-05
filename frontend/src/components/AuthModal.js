@@ -148,105 +148,106 @@ const AuthModal = ({ onClose }) => {
         ) : (
           <>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {!isLogin && (
-            <>
+              {!isLogin && (
+                <>
+                  <div>
+                    <Label htmlFor="name">Full Name</Label>
+                    <div className="relative mt-1">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="Jane Doe"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="pl-10"
+                        required
+                        data-testid="name-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="username">Username</Label>
+                    <div className="relative mt-1">
+                      <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <Input
+                        id="username"
+                        type="text"
+                        placeholder="janedoe"
+                        value={formData.username}
+                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                        className="pl-10"
+                        required
+                        data-testid="username-input"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
               <div>
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative mt-1">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <Input
-                    id="name"
-                    type="text"
-                    placeholder="Jane Doe"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="pl-10"
                     required
-                    data-testid="name-input"
+                    data-testid="email-input"
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative mt-1">
-                  <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <Input
-                    id="username"
-                    type="text"
-                    placeholder="janedoe"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     className="pl-10"
                     required
-                    data-testid="username-input"
+                    data-testid="password-input"
                   />
                 </div>
               </div>
-            </>
-          )}
 
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <div className="relative mt-1">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="pl-10"
-                required
-                data-testid="email-input"
-              />
+              <Button
+                type="submit"
+                className="w-full mt-6"
+                disabled={loading}
+                data-testid="submit-auth-button"
+              >
+                {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
+              </Button>
+            </form>
+
+            <div className="p-6 pt-0 space-y-2 text-center">
+              {isLogin && (
+                <button
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-sm text-gray-600 hover:text-gray-800 font-medium block w-full"
+                  data-testid="forgot-password-link"
+                >
+                  Forgot password?
+                </button>
+              )}
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                data-testid="toggle-auth-mode"
+              >
+                {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+              </button>
             </div>
-          </div>
-
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <div className="relative mt-1">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="pl-10"
-                required
-                data-testid="password-input"
-              />
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full mt-6"
-            disabled={loading}
-            data-testid="submit-auth-button"
-          >
-            {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
-          </Button>
-        </form>
-
-        <div className="p-6 pt-0 space-y-2 text-center">
-          {isLogin && (
-            <button
-              onClick={() => setShowForgotPassword(true)}
-              className="text-sm text-gray-600 hover:text-gray-800 font-medium block w-full"
-            >
-              Forgot password?
-            </button>
-          )}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-            data-testid="toggle-auth-mode"
-          >
-            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-          </button>
-        </div>
           </>
         )}
       </div>
