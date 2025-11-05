@@ -76,7 +76,7 @@ const AuthModal = ({ onClose }) => {
       <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">
-            {isLogin ? 'Welcome Back' : 'Join Idea Index'}
+            {showForgotPassword ? 'Reset Password' : isLogin ? 'Welcome Back' : 'Join Idea Index'}
           </h2>
           <button
             onClick={onClose}
@@ -87,7 +87,67 @@ const AuthModal = ({ onClose }) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {showForgotPassword ? (
+          <form onSubmit={handleResetPassword} className="p-6 space-y-4">
+            <p className="text-sm text-gray-600 mb-4">
+              Enter your email and choose a new password
+            </p>
+            
+            <div>
+              <Label htmlFor="reset-email">Email</Label>
+              <div className="relative mt-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="new-password">New Password</Label>
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full mt-6"
+              disabled={loading}
+            >
+              {loading ? 'Resetting...' : 'Reset Password'}
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowForgotPassword(false);
+                setResetEmail('');
+                setNewPassword('');
+              }}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium w-full text-center"
+            >
+              Back to login
+            </button>
+          </form>
+        ) : (
+          <>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {!isLogin && (
             <>
               <div>
