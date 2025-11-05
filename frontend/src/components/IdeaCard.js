@@ -47,6 +47,40 @@ const IdeaCard = ({ idea, onUpdate }) => {
     }
   };
 
+  const handleBookmark = async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setBookmarking(true);
+    try {
+      if (isBookmarked) {
+        await axios.delete(`${API}/bookmarks/${idea.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setIsBookmarked(false);
+        toast.success('Removed from bookmarks');
+      } else {
+        await axios.post(`${API}/bookmarks?idea_id=${idea.id}`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setIsBookmarked(true);
+        toast.success('Bookmarked!');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to bookmark');
+    } finally {
+      setBookmarking(false);
+    }
+  };
+
+  const handleShare = () => {
+    const url = `${window.location.origin}/ideas/${idea.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard!');
+  };
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all border border-gray-100" data-testid="idea-card">
       <div className="flex items-start space-x-4">
