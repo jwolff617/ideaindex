@@ -225,16 +225,28 @@ const Home = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="hot">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp size={16} />
+                    <span>Hot</span>
+                  </div>
+                </SelectItem>
                 <SelectItem value="top">
                   <div className="flex items-center space-x-2">
                     <TrendingUp size={16} />
-                    <span>Top Ideas</span>
+                    <span>Top</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="new">
                   <div className="flex items-center space-x-2">
                     <Clock size={16} />
-                    <span>Latest Ideas</span>
+                    <span>New</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="rising">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp size={16} className="text-orange-500" />
+                    <span>Rising</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="leaders">
