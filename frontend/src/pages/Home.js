@@ -357,7 +357,7 @@ const Home = () => {
                 <IdeaCard key={idea.id} idea={idea} onUpdate={fetchIdeas} />
               ))}
             </div>
-          </div>
+          )
         )}
       </div>
       
