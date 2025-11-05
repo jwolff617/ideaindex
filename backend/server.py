@@ -328,6 +328,17 @@ async def reset_password(email: EmailStr, new_password: str):
 async def get_me(user: User = Depends(get_current_user)):
     return user
 
+@api_router.get("/my-votes")
+async def get_my_votes(idea_ids: str, user: User = Depends(get_current_user)):
+    """Get user's votes for specific ideas"""
+    idea_id_list = idea_ids.split(',')
+    votes = await db.votes.find({
+        "user_id": user.id,
+        "idea_id": {"$in": idea_id_list}
+    }, {"_id": 0}).to_list(1000)
+    
+    return votes
+
 # ============ Ideas Routes ============
 
 @api_router.get("/ideas")
