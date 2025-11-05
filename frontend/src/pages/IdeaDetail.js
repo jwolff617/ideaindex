@@ -24,7 +24,49 @@ const IdeaDetail = () => {
 
   useEffect(() => {
     fetchIdea();
-  }, [id]);
+    if (user && token) {
+      fetchUserVotes();
+    }
+  }, [id, user, token]);
+
+  const fetchUserVotes = async () => {
+    if (!user || !token) return;
+    
+    try {
+      // Get all ideas in the thread
+      const response = await axios.get(`${API}/ideas/${id}`);
+      const data = response.data;
+      
+      const flattenComments = (comments) => {
+        let result = [];
+        comments.forEach(comment => {
+          result.push(comment);
+          if (comment.comments && comment.comments.length > 0) {
+            result = result.concat(flattenComments(comment.comments));
+          }
+        });
+        return result;
+      };
+
+      const allComments = flattenComments(data.comments || []);
+      const allIdeaIds = [data.id, ...allComments.map(c => c.id)];
+      
+      // Fetch user's votes for all these ideas
+      const votesResponse = await axios.get(`${API}/my-votes?idea_ids=${allIdeaIds.join(',')}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Convert to { ideaId: voteValue } format
+      const votesMap = {};
+      votesResponse.data.forEach(vote => {
+        votesMap[vote.idea_id] = vote.vote_value;
+      });
+      
+      setUserVotes(votesMap);
+    } catch (error) {
+      console.error('Failed to fetch user votes', error);
+    }
+  };
 
   const fetchIdea = async () => {
     setLoading(true);
