@@ -114,6 +114,20 @@ const IdeaDetail = () => {
       return;
     }
 
+    // Optimistic update
+    const currentVote = userVotes[ideaId];
+    const newVote = currentVote === voteValue ? 0 : voteValue; // Toggle off if same
+    
+    setUserVotes(prev => {
+      const updated = { ...prev };
+      if (newVote === 0) {
+        delete updated[ideaId];
+      } else {
+        updated[ideaId] = newVote;
+      }
+      return updated;
+    });
+
     try {
       await axios.post(
         `${API}/ideas/${ideaId}/vote`,
@@ -125,6 +139,8 @@ const IdeaDetail = () => {
       fetchIdea();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to vote');
+      // Revert optimistic update
+      fetchUserVotes();
     }
   };
 
