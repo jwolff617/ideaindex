@@ -115,6 +115,7 @@ const SubmitIdea = () => {
       if (formData.city_id) submitData.append('city_id', formData.city_id);
       if (formData.geo_lat) submitData.append('geo_lat', formData.geo_lat);
       if (formData.geo_lon) submitData.append('geo_lon', formData.geo_lon);
+      if (formData.tags) submitData.append('tags', formData.tags);
       
       // Add images
       selectedImages.forEach(image => {
