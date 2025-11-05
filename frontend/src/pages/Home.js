@@ -157,8 +157,11 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            {/* Filters */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm mb-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
