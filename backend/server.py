@@ -816,8 +816,9 @@ async def create_comment(
     if not parent:
         raise HTTPException(status_code=404, detail="Parent idea not found")
     
-    if not body or len(body.strip()) == 0:
-        raise HTTPException(status_code=400, detail="Body is required")
+    # Require either body or images
+    if (not body or len(body.strip()) == 0) and not images:
+        raise HTTPException(status_code=400, detail="Please provide text or an image")
     
     # Handle image uploads
     attachments = []
@@ -833,10 +834,13 @@ async def create_comment(
                 
                 attachments.append(f"/uploads/{unique_filename}")
     
+    # Use space if no body but has images
+    final_body = body.strip() if body and body.strip() else "[Image]"
+    
     comment = Idea(
         author_id=user.id,
         parent_id=idea_id,
-        body=body,
+        body=final_body,
         attachments=attachments
     )
     
