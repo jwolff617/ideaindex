@@ -34,8 +34,9 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || 'all');
-  const [sortBy, setSortBy] = useState('top');
+  const [sortBy, setSortBy] = useState('hot');
   const [showType, setShowType] = useState('ideas'); // 'ideas' or 'leaders'
+  const [trendingTags, setTrendingTags] = useState([]);
 
   useEffect(() => {
     fetchCategories();
