@@ -415,21 +415,48 @@ async def get_ideas(
     }
 
 @api_router.post("/ideas")
-async def create_idea(idea_data: IdeaBase, user: User = Depends(check_email_verified)):
-    if not idea_data.title:
+async def create_idea(
+    title: Optional[str] = None,
+    body: str = None,
+    category_id: Optional[str] = None,
+    city_id: Optional[str] = None,
+    geo_lat: Optional[float] = None,
+    geo_lon: Optional[float] = None,
+    images: List[UploadFile] = File(None),
+    user: User = Depends(check_email_verified)
+):
+    if not title:
         raise HTTPException(status_code=400, detail="Title is required")
     
-    if len(idea_data.body) < 10:
+    if not body or len(body) < 10:
         raise HTTPException(status_code=400, detail="Body must be at least 10 characters")
+    
+    # Handle image uploads
+    attachments = []
+    if images:
+        for image in images:
+            if image.filename:
+                # Generate unique filename
+                file_extension = image.filename.split('.')[-1]
+                unique_filename = f"{uuid.uuid4()}.{file_extension}"
+                file_path = UPLOADS_DIR / unique_filename
+                
+                # Save file
+                with file_path.open('wb') as buffer:
+                    shutil.copyfileobj(image.file, buffer)
+                
+                # Store relative URL
+                attachments.append(f"/uploads/{unique_filename}")
     
     idea = Idea(
         author_id=user.id,
-        title=idea_data.title,
-        body=idea_data.body,
-        category_id=idea_data.category_id,
-        city_id=idea_data.city_id,
-        geo_lat=idea_data.geo_lat,
-        geo_lon=idea_data.geo_lon
+        title=title,
+        body=body,
+        category_id=category_id,
+        city_id=city_id,
+        geo_lat=geo_lat,
+        geo_lon=geo_lon,
+        attachments=attachments
     )
     
     idea_dict = idea.model_dump()
