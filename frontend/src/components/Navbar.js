@@ -4,6 +4,7 @@ import { AuthContext } from '../App';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Lightbulb, Map, Users, LogOut, Plus } from 'lucide-react';
+import NotificationCenter from './NotificationCenter';
 import {
   DropdownMenu,
   DropdownMenuContent,
