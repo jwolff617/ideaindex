@@ -21,6 +21,8 @@ const IdeaDetail = () => {
   const [loading, setLoading] = useState(true);
   const [replyToId, setReplyToId] = useState(null);
   const [replyBody, setReplyBody] = useState('');
+  const [replyImages, setReplyImages] = useState([]);
+  const [replyImagePreviews, setReplyImagePreviews] = useState([]);
   const [replying, setReplying] = useState(false);
 
   useEffect(() => {
