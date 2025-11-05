@@ -10,6 +10,7 @@ import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { ArrowUp, ArrowDown, MapPin, Calendar, MessageCircle, TrendingUp } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { TextWithURLPreviews } from '../components/URLPreview';
 
 const IdeaDetail = () => {
   const { id } = useParams();
