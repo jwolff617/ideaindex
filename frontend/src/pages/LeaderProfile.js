@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { API } from '../App';
+import { API, BACKEND_URL, AuthContext } from '../App';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import { Avatar, AvatarFallback } from '../components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Award, Calendar, Lightbulb, MessageCircle } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Award, Calendar, Lightbulb, MessageCircle, Camera, Upload } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
 const LeaderProfile = () => {
   const { username } = useParams();
