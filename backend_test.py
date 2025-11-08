@@ -94,7 +94,7 @@ def test_create_idea_with_image(results):
     # Create test image
     test_image = create_test_image("test_idea.jpg")
     
-    # Prepare multipart form data
+    # Prepare multipart form data - need to pass all data as form fields
     files = {
         'images': ('test_idea.jpg', test_image, 'image/jpeg')
     }
