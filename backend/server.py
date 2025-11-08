@@ -709,8 +709,9 @@ async def create_idea(
     if not title:
         raise HTTPException(status_code=400, detail="Title is required")
     
-    if not body or len(body) < 10:
-        raise HTTPException(status_code=400, detail="Body must be at least 10 characters")
+    # Require either body text or images
+    if (not body or not body.strip()) and not images:
+        raise HTTPException(status_code=400, detail="Please provide either text or images")
     
     # Filter out empty/null images
     valid_images = [img for img in images if img and img.filename]
