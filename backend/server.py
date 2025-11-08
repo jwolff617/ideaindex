@@ -534,14 +534,6 @@ async def upload_profile_picture(
         logging.error(f"Profile picture upload failed: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to upload profile picture: {str(e)}")
 
-        return {"corrected": body}  # Return original on failure
-
-        return {"title": title}
-    except Exception as e:
-        logging.error(f"AI title generation failed: {e}")
-        # Fallback: Use first sentence or truncated body
-        fallback_title = body.split('.')[0][:50] + ('...' if len(body) > 50 else '')
-
 @api_router.post("/ideas/{idea_id}/promote")
 async def promote_to_level_one(
     idea_id: str,
