@@ -91,6 +91,7 @@ function App() {
             <Route path="/leaders/:username" element={<LeaderProfile />} />
             <Route path="/map" element={<MapView />} />
             <Route path="/submit" element={<SubmitIdea />} />
+            <Route path="/collections" element={<Collections />} />
           </Routes>
         </BrowserRouter>
         {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
