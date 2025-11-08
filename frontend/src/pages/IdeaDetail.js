@@ -188,7 +188,11 @@ const IdeaDetail = () => {
       setReplyToId(null);
       fetchIdea();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to post idea');
+      console.error('Reply submission error:', error);
+      console.error('Error response:', error.response);
+      console.error('Error detail:', error.response?.data);
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to post idea';
+      toast.error(errorMessage);
     } finally {
       setReplying(false);
     }
