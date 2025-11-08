@@ -9,6 +9,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { formatDistanceToNow } from 'date-fns';
+import { TextWithURLPreviews } from './URLPreview';
 
 const IdeaCard = ({ idea }) => {
   const navigate = useNavigate();
