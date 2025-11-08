@@ -472,16 +472,68 @@ const IdeaDetail = () => {
                             )}
                             
                             {/* Reply button */}
+                            {user && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setReplyToId(replyToId === idea.id ? null : idea.id)}
+                                className="text-sm"
+                                data-testid="reply-button"
+                              >
+                                <MessageCircle size={14} className="mr-1" />
+                                Reply
+                              </Button>
+                            )}
+                            
+                            {/* Bookmark button */}
+                            {user && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => toast.info('Bookmark feature ready - implement save')}
+                                className="text-sm"
+                              >
+                                <Bookmark size={14} />
+                              </Button>
+                            )}
+                            
+                            {/* Share button */}
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => setReplyToId(replyToId === idea.id ? null : idea.id)}
+                              onClick={() => {
+                                const url = `${window.location.origin}/ideas/${idea.id}`;
+                                navigator.clipboard.writeText(url);
+                                toast.success('Link copied!');
+                              }}
                               className="text-sm"
-                              data-testid="reply-button"
                             >
-                              <MessageCircle size={14} className="mr-1" />
-                              Reply
+                              <Share2 size={14} />
                             </Button>
+                            
+                            {/* Delete/Draft buttons (author only) */}
+                            {user && idea.author?.id === user.id && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => setDraftConfirm(idea.id)}
+                                  className="text-sm text-amber-600 hover:text-amber-700"
+                                  title="Save for later (draft)"
+                                >
+                                  <Archive size={14} />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => setDeleteConfirm(idea.id)}
+                                  className="text-sm text-red-600 hover:text-red-700"
+                                  title="Delete idea"
+                                >
+                                  <Trash2 size={14} />
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </div>
 
