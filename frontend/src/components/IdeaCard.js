@@ -222,9 +222,11 @@ const IdeaCard = ({ idea }) => {
             {idea.title}
           </h3>
 
-          {/* Body text preview */}
+          {/* Body text preview with URL previews */}
           {truncatedBody && (
-            <p className="text-gray-700 mb-3 whitespace-pre-wrap" data-testid="idea-body">{truncatedBody}</p>
+            <div className="text-gray-700 mb-3" data-testid="idea-body">
+              <TextWithURLPreviews text={truncatedBody} />
+            </div>
           )}
 
           {/* Images inline (up to 2) */}
