@@ -183,7 +183,7 @@ frontend:
         comment: "Frontend now constructs URLs as: BACKEND_URL + attachment where attachment is /api/uploads/filename"
       - working: true
         agent: "main"
-        comment: "✅ VERIFIED WORKING! Screenshot confirms red JPEG test image displays correctly. Image URL: https://swapideas.preview.emergentagent.com/api/uploads/48abb75a-34d4-457c-8a29-cfc75e392386.jpg. Frontend properly constructs URLs using BACKEND_URL."
+        comment: "✅ VERIFIED WORKING! Screenshot confirms red JPEG test image displays correctly. Image URL: https://brainstorm-hub-215.preview.emergentagent.com/api/uploads/48abb75a-34d4-457c-8a29-cfc75e392386.jpg. Frontend properly constructs URLs using BACKEND_URL."
 
   - task: "Export BACKEND_URL from App.js"
     implemented: true
@@ -289,7 +289,7 @@ agent_communication:
       5. Frontend: Use BACKEND_URL instead of window.location.origin (IdeaDetail.js line 370)
       
       RESULT:
-      - Image URLs: https://swapideas.preview.emergentagent.com/api/uploads/{uuid}.{ext}
+      - Image URLs: https://brainstorm-hub-215.preview.emergentagent.com/api/uploads/{uuid}.{ext}
       - Images upload successfully ✅
       - Images serve correctly ✅
       - Images display in UI ✅

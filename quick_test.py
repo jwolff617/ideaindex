@@ -4,7 +4,7 @@ import io
 from PIL import Image
 import os
 
-BACKEND_URL = "https://swapideas.preview.emergentagent.com"
+BACKEND_URL = "https://brainstorm-hub-215.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # Create user and get token

@@ -12,7 +12,7 @@ import os
 import sys
 
 # Backend URL from environment
-BACKEND_URL = "https://swapideas.preview.emergentagent.com"
+BACKEND_URL = "https://brainstorm-hub-215.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class TestResults:
