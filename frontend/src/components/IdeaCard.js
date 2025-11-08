@@ -465,7 +465,7 @@ const IdeaCard = ({ idea }) => {
           {/* Inline reply form */}
           {showReply && (
             <div className="mt-4 pt-4 border-t border-gray-200" onClick={(e) => e.stopPropagation()}>
-              {/* Title field for new Level 1 ideas */}
+              {/* Title field for new Outdexed ideas */}
               {postAsNewIdea && (
                 <div className="mb-2">
                   <div className="flex items-center justify-between mb-1">
