@@ -401,6 +401,10 @@ async def update_settings(
         update_data['settings.email_notifications'] = email_notifications
     if feed_density is not None and feed_density in ['compact', 'comfortable', 'spacious']:
         update_data['settings.feed_density'] = feed_density
+    if auto_spellcheck is not None:
+        update_data['settings.auto_spellcheck'] = auto_spellcheck
+    if auto_generate_title is not None:
+        update_data['settings.auto_generate_title'] = auto_generate_title
     
     if update_data:
         await db.users.update_one(
