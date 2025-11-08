@@ -11,6 +11,7 @@ import { Textarea } from '../components/ui/textarea';
 import { ArrowUp, ArrowDown, MapPin, Calendar, MessageCircle, TrendingUp, Image as ImageIcon, X, ChevronLeft } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { TextWithURLPreviews } from '../components/URLPreview';
+import PromoteModal from '../components/PromoteModal';
 
 const IdeaDetail = () => {
   const { id } = useParams();
@@ -24,6 +25,7 @@ const IdeaDetail = () => {
   const [replyImages, setReplyImages] = useState([]);
   const [replyImagePreviews, setReplyImagePreviews] = useState([]);
   const [replying, setReplying] = useState(false);
+  const [promoteIdeaId, setPromoteIdeaId] = useState(null);
 
   useEffect(() => {
     fetchIdea();
