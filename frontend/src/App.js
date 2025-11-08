@@ -10,6 +10,7 @@ import Leaders from './pages/Leaders';
 import MapView from './pages/MapView';
 import SubmitIdea from './pages/SubmitIdea';
 import Collections from './pages/Collections';
+import Settings from './pages/Settings';
 import AuthModal from './components/AuthModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
