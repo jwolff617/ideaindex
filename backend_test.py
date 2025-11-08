@@ -347,17 +347,218 @@ def test_multiple_image_formats(results):
     
     return overall_success
 
+def test_edge_cases(results):
+    """Test edge cases that might cause 'Failed to post idea' error"""
+    print("\n=== Testing Edge Cases ===")
+    
+    if not results.auth_token:
+        results.add_result("Edge Cases", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # Test 1: Body text less than 10 characters (should fail)
+    print("\n--- Testing short body text ---")
+    test_image = create_test_image("test_short.jpg")
+    files = {'images': ('test_short.jpg', test_image, 'image/jpeg')}
+    data = {
+        'title': 'Short Body Test',
+        'body': 'Short'  # Less than 10 characters
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        if response.status_code == 400:
+            results.add_result("Short Body Validation", True, "Correctly rejected short body text")
+        else:
+            results.add_result("Short Body Validation", False, 
+                             f"Should have rejected short body, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Short Body Validation", False, f"Error: {str(e)}")
+    
+    # Test 2: No authentication token (should fail)
+    print("\n--- Testing no auth token ---")
+    test_image = create_test_image("test_noauth.jpg")
+    files = {'images': ('test_noauth.jpg', test_image, 'image/jpeg')}
+    data = {
+        'title': 'No Auth Test',
+        'body': 'This should fail due to no authentication token provided.'
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", files=files, data=data)  # No headers
+        if response.status_code == 401 or response.status_code == 403:
+            results.add_result("No Auth Token", True, "Correctly rejected request without auth")
+        else:
+            results.add_result("No Auth Token", False, 
+                             f"Should have rejected no auth, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("No Auth Token", False, f"Error: {str(e)}")
+    
+    # Test 3: Image upload without body text
+    print("\n--- Testing image without body ---")
+    test_image = create_test_image("test_nobody.jpg")
+    files = {'images': ('test_nobody.jpg', test_image, 'image/jpeg')}
+    data = {
+        'title': 'Image Only Test'
+        # No body field
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        if response.status_code == 400:
+            results.add_result("Image Without Body", True, "Correctly rejected missing body")
+        else:
+            results.add_result("Image Without Body", False, 
+                             f"Should have rejected missing body, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Image Without Body", False, f"Error: {str(e)}")
+    
+    # Test 4: Large image file (create 5MB image)
+    print("\n--- Testing large image file ---")
+    try:
+        large_img = Image.new('RGB', (2000, 2000), color='blue')
+        large_img_bytes = io.BytesIO()
+        large_img.save(large_img_bytes, format='JPEG', quality=95)
+        large_img_bytes.seek(0)
+        
+        files = {'images': ('large_test.jpg', large_img_bytes, 'image/jpeg')}
+        data = {
+            'title': 'Large Image Test',
+            'body': 'Testing upload of a large image file to see if it causes issues.'
+        }
+        
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data, timeout=30)
+        if response.status_code == 200:
+            results.add_result("Large Image Upload", True, "Large image uploaded successfully")
+        else:
+            results.add_result("Large Image Upload", False, 
+                             f"Large image upload failed: {response.status_code}", 
+                             {"response": response.text[:500]})
+    except Exception as e:
+        results.add_result("Large Image Upload", False, f"Large image error: {str(e)}")
+
+def test_specific_user_scenario(results):
+    """Test the exact scenario described in the review request"""
+    print("\n=== Testing Specific User Scenario ===")
+    
+    if not results.auth_token:
+        results.add_result("User Scenario Test", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # Create the exact test case from the review request
+    test_image = create_test_image("user_test_image.jpg")
+    files = {'images': ('user_test_image.jpg', test_image, 'image/jpeg')}
+    
+    data = {
+        'title': 'New Test Image Post',
+        'body': 'This is a test post with an image attachment to verify upload functionality is working correctly'
+    }
+    
+    try:
+        print(f"Making request to: {API_BASE}/ideas")
+        print(f"Headers: Authorization: Bearer {results.auth_token[:20]}...")
+        print(f"Data: {data}")
+        print(f"Files: {list(files.keys())}")
+        
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        
+        print(f"Response status: {response.status_code}")
+        print(f"Response headers: {dict(response.headers)}")
+        
+        if response.status_code == 200:
+            idea_data = response.json()
+            results.add_result("User Scenario Test", True, 
+                             "Successfully created idea matching user scenario",
+                             {"idea_id": idea_data.get("id"), "attachments": idea_data.get("attachments")})
+            
+            # Verify the image is accessible
+            attachments = idea_data.get("attachments", [])
+            if attachments:
+                image_url = f"{BACKEND_URL}{attachments[0]}"
+                img_response = requests.get(image_url)
+                if img_response.status_code == 200:
+                    results.add_result("User Scenario Image Access", True, 
+                                     f"Image accessible at {image_url}")
+                else:
+                    results.add_result("User Scenario Image Access", False, 
+                                     f"Image not accessible: {img_response.status_code}")
+        else:
+            error_text = response.text
+            results.add_result("User Scenario Test", False, 
+                             f"Failed to post idea: {response.status_code}",
+                             {"response": error_text, "headers": dict(response.headers)})
+            
+            # This is the exact error the user is experiencing
+            print(f"❌ REPRODUCING USER ERROR: {response.status_code}")
+            print(f"Response body: {error_text}")
+            
+    except Exception as e:
+        results.add_result("User Scenario Test", False, f"Request error: {str(e)}")
+
+def test_form_data_parsing(results):
+    """Test different ways of sending form data to identify parsing issues"""
+    print("\n=== Testing Form Data Parsing ===")
+    
+    if not results.auth_token:
+        results.add_result("Form Data Parsing", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # Test 1: Using requests.post with files and data (current method)
+    print("\n--- Testing files + data method ---")
+    test_image = create_test_image("form_test1.jpg")
+    files = {'images': ('form_test1.jpg', test_image, 'image/jpeg')}
+    data = {
+        'title': 'Form Test 1',
+        'body': 'Testing form data parsing with files and data parameters.'
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        if response.status_code == 200:
+            results.add_result("Files + Data Method", True, "Form parsing successful")
+        else:
+            results.add_result("Files + Data Method", False, 
+                             f"Form parsing failed: {response.status_code}", {"response": response.text})
+    except Exception as e:
+        results.add_result("Files + Data Method", False, f"Error: {str(e)}")
+    
+    # Test 2: Check if missing title causes issues
+    print("\n--- Testing missing title ---")
+    test_image = create_test_image("form_test2.jpg")
+    files = {'images': ('form_test2.jpg', test_image, 'image/jpeg')}
+    data = {
+        # 'title': 'Missing Title Test',  # Intentionally missing
+        'body': 'Testing what happens when title is missing from form data.'
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        if response.status_code == 400:
+            results.add_result("Missing Title Validation", True, "Correctly rejected missing title")
+        else:
+            results.add_result("Missing Title Validation", False, 
+                             f"Should reject missing title, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Missing Title Validation", False, f"Error: {str(e)}")
+
 def main():
     """Run all image upload and serving tests"""
-    print("🧪 Starting Backend Image Upload and Serving Tests")
+    print("🧪 Starting Comprehensive Backend Image Upload Tests")
     print(f"Backend URL: {BACKEND_URL}")
+    print("Testing the complete image upload flow for 'Post Idea' form")
     
     results = TestResults()
     
-    # Test sequence
+    # Test sequence - start with basic functionality
     auth_success = test_user_authentication(results)
     
     if auth_success:
+        # Basic functionality tests
         image_path = test_create_idea_with_image(results)
         
         if image_path:
@@ -370,10 +571,15 @@ def main():
         test_migration_endpoint(results)
         test_retrieve_idea_attachments(results)
         test_multiple_image_formats(results)
+        
+        # NEW: Comprehensive edge case and error testing
+        test_edge_cases(results)
+        test_specific_user_scenario(results)
+        test_form_data_parsing(results)
     
     # Print summary
     print("\n" + "="*60)
-    print("🏁 TEST SUMMARY")
+    print("🏁 COMPREHENSIVE TEST SUMMARY")
     print("="*60)
     
     passed = sum(1 for r in results.results if r["success"])
@@ -384,12 +590,16 @@ def main():
     print(f"Failed: {total - passed}")
     print(f"Success Rate: {(passed/total)*100:.1f}%")
     
-    # Show failed tests
+    # Show failed tests with details
     failed_tests = [r for r in results.results if not r["success"]]
     if failed_tests:
         print("\n❌ FAILED TESTS:")
         for test in failed_tests:
             print(f"  - {test['test']}: {test['message']}")
+            if test.get('details'):
+                print(f"    Details: {test['details']}")
+    else:
+        print("\n✅ ALL TESTS PASSED!")
     
     # Return results for programmatic use
     return results
