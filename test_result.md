@@ -212,6 +212,18 @@ frontend:
         agent: "main"
         comment: "✅ VERIFIED WORKING! BACKEND_URL successfully exported and used in IdeaDetail component."
 
+  - task: "Profile Picture Upload Frontend"
+    implemented: true
+    working: "needs_testing"
+    file: "frontend/src/pages/LeaderProfile.js, frontend/src/components/Navbar.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "needs_testing"
+        agent: "main"
+        comment: "Implemented profile picture upload UI in LeaderProfile.js. Features: 1) Display avatar image (avatar_url) or fallback with initials 2) Camera icon button on own profile only 3) File selection with validation (image type, 10MB max) 4) Preview before upload 5) Upload/Cancel buttons 6) Calls /api/upload-profile-picture endpoint 7) Updates avatar in UI after upload. Also updated Navbar.js to display user avatar in dropdown menu."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
