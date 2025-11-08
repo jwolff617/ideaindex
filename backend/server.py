@@ -366,6 +366,49 @@ async def get_my_votes(idea_ids: str, user: User = Depends(get_current_user)):
     
     return votes
 
+@api_router.get("/settings")
+async def get_settings(user: User = Depends(get_current_user)):
+    """Get user settings"""
+    user_doc = await db.users.find_one({"id": user.id}, {"_id": 0})
+    settings = user_doc.get('settings', {
+        'replies_in_feed': 2,  # Default: show top 2 replies
+        'dark_mode': False,
+        'email_notifications': True,
+        'feed_density': 'comfortable'  # compact, comfortable, spacious
+    })
+    return settings
+
+@api_router.put("/settings")
+async def update_settings(
+    replies_in_feed: Optional[int] = None,
+    dark_mode: Optional[bool] = None,
+    email_notifications: Optional[bool] = None,
+    feed_density: Optional[str] = None,
+    user: User = Depends(get_current_user)
+):
+    """Update user settings"""
+    update_data = {}
+    
+    if replies_in_feed is not None:
+        update_data['settings.replies_in_feed'] = max(0, min(replies_in_feed, 10))  # 0-10 range
+    if dark_mode is not None:
+        update_data['settings.dark_mode'] = dark_mode
+    if email_notifications is not None:
+        update_data['settings.email_notifications'] = email_notifications
+    if feed_density is not None and feed_density in ['compact', 'comfortable', 'spacious']:
+        update_data['settings.feed_density'] = feed_density
+    
+    if update_data:
+        await db.users.update_one(
+            {"id": user.id},
+            {"$set": update_data}
+        )
+    
+    # Return updated settings
+    user_doc = await db.users.find_one({"id": user.id}, {"_id": 0})
+    return user_doc.get('settings', {})
+
+
 @api_router.get("/url-preview")
 async def get_url_preview(url: str):
     """Fetch Open Graph metadata for URL preview"""
