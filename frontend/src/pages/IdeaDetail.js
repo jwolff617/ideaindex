@@ -624,6 +624,90 @@ const IdeaDetail = () => {
         </div>
       </div>
 
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center space-x-3 mb-4">
+              <Trash2 size={24} className="text-red-600" />
+              <h3 className="text-xl font-bold">Delete Idea?</h3>
+            </div>
+            <p className="text-gray-600 mb-6">
+              This action cannot be undone. This idea and all its replies will be permanently deleted.
+            </p>
+            <div className="flex items-center space-x-3">
+              <Button variant="ghost" onClick={() => setDeleteConfirm(null)} className="flex-1">
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    await axios.delete(`${API}/ideas/${deleteConfirm}`, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    toast.success('Idea deleted');
+                    setDeleteConfirm(null);
+                    if (deleteConfirm === mainIdea.id) {
+                      navigate('/');
+                    } else {
+                      fetchIdea();
+                    }
+                  } catch (error) {
+                    toast.error('Failed to delete');
+                  }
+                }}
+                className="flex-1 bg-red-600 hover:bg-red-700"
+              >
+                Delete Forever
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Save as Draft Confirmation Modal */}
+      {draftConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center space-x-3 mb-4">
+              <Archive size={24} className="text-amber-600" />
+              <h3 className="text-xl font-bold">Save for Later?</h3>
+            </div>
+            <p className="text-gray-600 mb-6">
+              This idea will be hidden from public view and saved to your private drafts. Only you can see it in your profile.
+            </p>
+            <div className="flex items-center space-x-3">
+              <Button variant="ghost" onClick={() => setDraftConfirm(null)} className="flex-1">
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    await axios.put(`${API}/ideas/${draftConfirm}`, {
+                      is_draft: true
+                    }, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    toast.success('Saved as draft');
+                    setDraftConfirm(null);
+                    if (draftConfirm === mainIdea.id) {
+                      navigate('/');
+                    } else {
+                      fetchIdea();
+                    }
+                  } catch (error) {
+                    toast.error('Failed to save as draft');
+                  }
+                }}
+                className="flex-1 bg-amber-600 hover:bg-amber-700"
+              >
+                Save for Later
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Promote Modal */}
       {promoteIdeaId && (
         <PromoteModal
