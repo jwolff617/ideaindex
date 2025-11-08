@@ -374,7 +374,9 @@ async def get_settings(user: User = Depends(get_current_user)):
         'replies_in_feed': 2,  # Default: show top 2 replies
         'dark_mode': False,
         'email_notifications': True,
-        'feed_density': 'comfortable'  # compact, comfortable, spacious
+        'feed_density': 'comfortable',  # compact, comfortable, spacious
+        'auto_spellcheck': True,  # Auto-fix typos using AI
+        'auto_generate_title': True  # Auto-generate titles for Level 1 ideas
     })
     return settings
 
