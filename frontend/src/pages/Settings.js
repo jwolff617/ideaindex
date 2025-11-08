@@ -115,7 +115,7 @@ const Settings = () => {
                     Number of top replies to display under each idea in your feed
                   </p>
                   <Select
-                    value={settings.replies_in_feed.toString()}
+                    value={settings.replies_in_feed?.toString() || "2"}
                     onValueChange={(value) => setSettings({...settings, replies_in_feed: parseInt(value)})}
                   >
                     <SelectTrigger className="w-full">
