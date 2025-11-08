@@ -171,19 +171,19 @@ const LocationPopup = ({ location }) => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200">
+        <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-gray-200">
           <Button
             size="sm"
             variant="outline"
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="h-8"
+            className="h-8 w-8 p-0"
           >
             <ChevronLeft size={14} />
           </Button>
           
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {totalPages}
+          <span className="text-xs text-gray-600 whitespace-nowrap">
+            {currentPage}/{totalPages}
           </span>
           
           <Button
@@ -191,7 +191,7 @@ const LocationPopup = ({ location }) => {
             variant="outline"
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="h-8"
+            className="h-8 w-8 p-0"
           >
             <ChevronRight size={14} />
           </Button>
