@@ -134,15 +134,15 @@ const LocationPopup = ({ location }) => {
   };
 
   return (
-    <div className="py-2">
+    <div className="py-2 overflow-x-hidden max-w-full">
       {/* Header */}
       <div className="mb-3 pb-3 border-b border-gray-200">
-        <h3 className="font-bold text-lg text-gray-900">{location.city || 'Ideas'}</h3>
-        <p className="text-sm text-gray-500">{location.ideas.length} ideas at this location</p>
+        <h3 className="font-bold text-base text-gray-900 truncate">{location.city || 'Ideas'}</h3>
+        <p className="text-xs text-gray-500">{location.ideas.length} ideas at this location</p>
       </div>
 
       {/* Ideas List */}
-      <div className="space-y-3 max-h-80 overflow-y-auto">
+      <div className="space-y-3 max-h-80 overflow-y-auto overflow-x-hidden">
         {currentIdeas.map((idea, idx) => (
           <div key={idea.id} className="pb-3 border-b border-gray-100 last:border-0">
             <Link 
@@ -150,7 +150,7 @@ const LocationPopup = ({ location }) => {
               className="block hover:bg-gray-50 -mx-2 px-2 py-1 rounded transition-colors"
             >
               <div className="flex items-start justify-between gap-2 mb-1">
-                <h4 className="font-semibold text-sm text-gray-900 hover:text-emerald-600 line-clamp-2">
+                <h4 className="font-semibold text-sm text-gray-900 hover:text-emerald-600 line-clamp-2 break-words flex-1 min-w-0">
                   {idea.title}
                 </h4>
                 <div className="flex items-center space-x-1 text-emerald-600 flex-shrink-0">
@@ -158,9 +158,9 @@ const LocationPopup = ({ location }) => {
                   <span className="text-sm font-bold">{idea.upvotes}</span>
                 </div>
               </div>
-              <p className="text-xs text-gray-600 line-clamp-2 mb-2">{idea.body}</p>
+              <p className="text-xs text-gray-600 line-clamp-2 mb-2 break-words">{idea.body}</p>
               {idea.category && (
-                <Badge className="bg-emerald-50 text-emerald-700 text-xs">
+                <Badge className="bg-emerald-50 text-emerald-700 text-xs truncate max-w-full">
                   {idea.category}
                 </Badge>
               )}
