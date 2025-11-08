@@ -626,7 +626,10 @@ const IdeaDetail = () => {
         </div>
       )}
 
-      {/* Save as Draft Confirmation Modal */}
+      {/* Removed Draft Modal - Feature Pruned */}
+      
+      {/* Removed Promote Modal - Use Checkbox Instead */}
+      
       {draftConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
