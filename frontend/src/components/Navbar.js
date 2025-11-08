@@ -79,6 +79,12 @@ const Navbar = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger data-testid="user-menu-trigger">
                     <Avatar className="cursor-pointer ring-2 ring-emerald-500/20 hover:ring-emerald-500/40 transition-all">
+                      {user.avatar_url ? (
+                        <AvatarImage 
+                          src={`${BACKEND_URL}${user.avatar_url}`} 
+                          alt={user.name}
+                        />
+                      ) : null}
                       <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-semibold">
                         {user.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
