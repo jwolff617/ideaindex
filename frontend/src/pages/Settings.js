@@ -139,7 +139,7 @@ const Settings = () => {
                     Adjust spacing and size of feed items
                   </p>
                   <Select
-                    value={settings.feed_density}
+                    value={settings.feed_density || "comfortable"}
                     onValueChange={(value) => setSettings({...settings, feed_density: value})}
                   >
                     <SelectTrigger className="w-full">
