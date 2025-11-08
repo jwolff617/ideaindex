@@ -370,12 +370,16 @@ const Settings = () => {
 
                 <Button
                   type="submit"
-                  disabled={changingPassword || !newPassword || !confirmPassword}
+                  disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
                   <Lock size={16} className="mr-2" />
                   {changingPassword ? 'Changing...' : 'Change Password'}
                 </Button>
+              </form>
+              <p className="text-xs text-gray-500 mt-2">
+                For security, you must enter your current password to change it.
+              </p>
               </form>
             </div>
 
