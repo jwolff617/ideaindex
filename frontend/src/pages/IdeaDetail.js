@@ -26,6 +26,10 @@ const IdeaDetail = () => {
   const [replyImagePreviews, setReplyImagePreviews] = useState([]);
   const [replying, setReplying] = useState(false);
   const [promoteIdeaId, setPromoteIdeaId] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [draftConfirm, setDraftConfirm] = useState(null);
+  const [editingIdea, setEditingIdea] = useState(null);
+  const [editBody, setEditBody] = useState('');
 
   useEffect(() => {
     fetchIdea();
