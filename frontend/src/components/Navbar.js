@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../App';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Lightbulb, Map, Users, LogOut, Plus } from 'lucide-react';
+import { Lightbulb, Map, Users, LogOut, Plus, Bookmark } from 'lucide-react';
 import NotificationCenter from './NotificationCenter';
 import {
   DropdownMenu,
