@@ -351,6 +351,20 @@ const Home = () => {
           )}
         </div>
 
+        {/* Refresh Button */}
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="flex items-center space-x-2"
+          >
+            <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh Feed'}</span>
+          </Button>
+        </div>
+
         {/* Content */}
         {loading ? (
           <div className="text-center py-12">
