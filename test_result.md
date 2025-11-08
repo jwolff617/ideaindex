@@ -248,3 +248,36 @@ agent_communication:
       - Multipart form data handling fixed
       
       READY FOR FRONTEND TESTING!
+
+  - agent: "main"
+    message: |
+      🎉 IMAGE DISPLAY BUG COMPLETELY FIXED! 
+      
+      FRONTEND VERIFICATION COMPLETED:
+      ✅ Images display correctly in IdeaDetail component
+      ✅ JPEG test image (red square) rendering perfectly
+      ✅ Image URL correctly constructed: BACKEND_URL + /api/uploads/filename
+      ✅ Screenshot evidence shows no broken image icons
+      
+      COMPLETE FIX SUMMARY:
+      
+      ROOT CAUSE:
+      - Kubernetes ingress routes non-/api paths to frontend (port 3000)
+      - StaticFiles was mounted at /uploads (routed to wrong service)
+      - Frontend constructed URLs with window.location.origin (incorrect host)
+      
+      SOLUTION IMPLEMENTED:
+      1. Backend: Mount StaticFiles at /api/uploads (line 44)
+      2. Backend: Store attachment paths as /api/uploads/filename (lines 729, 839)
+      3. Backend: Fix Form() declarations for multipart data (testing agent)
+      4. Frontend: Export BACKEND_URL from App.js
+      5. Frontend: Use BACKEND_URL instead of window.location.origin (IdeaDetail.js line 370)
+      
+      RESULT:
+      - Image URLs: https://swapideas.preview.emergentagent.com/api/uploads/{uuid}.{ext}
+      - Images upload successfully ✅
+      - Images serve correctly ✅
+      - Images display in UI ✅
+      
+      IMAGE UPLOAD FEATURE IS NOW FULLY FUNCTIONAL!
+      Ready to proceed with Phase 2: X.com/Reddit-style UX improvements.
