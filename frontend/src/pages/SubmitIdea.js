@@ -136,7 +136,18 @@ const SubmitIdea = () => {
       toast.success('Idea posted successfully!');
       navigate(`/ideas/${response.data.id}`);
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to post idea');
+      console.error('Idea submission error:', error);
+      let errorMessage = 'Failed to post idea';
+      
+      if (error.response?.status === 403) {
+        errorMessage = 'Please verify your email to post ideas. Check your email for verification link or use auto-verify.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Please sign in to post ideas';
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
