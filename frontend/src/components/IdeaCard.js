@@ -472,7 +472,7 @@ const IdeaCard = ({ idea }) => {
                     type="checkbox"
                     id={`new-idea-${idea.id}`}
                     checked={postAsNewIdea}
-                    onChange={(e) => setPostAsNewIdea(e.target.checked)}
+                    onChange={(e) => handlePostAsNewIdeaChange(e.target.checked)}
                     className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
                   />
                   <label htmlFor={`new-idea-${idea.id}`} className="text-sm font-semibold text-emerald-900 cursor-pointer">
