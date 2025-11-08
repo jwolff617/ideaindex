@@ -838,8 +838,8 @@ async def create_comment(
             
             attachments.append(f"/api/uploads/{unique_filename}")
     
-    # Use space if no body but has images
-    final_body = body.strip() if body and body.strip() else "[Image]"
+    # Use empty string if no body text - images can stand alone
+    final_body = body.strip() if body and body.strip() else ""
     
     comment = Idea(
         author_id=user.id,
