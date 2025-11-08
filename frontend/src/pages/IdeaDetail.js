@@ -191,7 +191,18 @@ const IdeaDetail = () => {
       console.error('Reply submission error:', error);
       console.error('Error response:', error.response);
       console.error('Error detail:', error.response?.data);
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to post idea';
+      let errorMessage = 'Failed to post idea';
+      
+      if (error.response?.status === 403) {
+        errorMessage = 'Please verify your email to post ideas. Check your email for verification link or use auto-verify.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Please sign in to post ideas';
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast.error(errorMessage);
     } finally {
       setReplying(false);
