@@ -126,6 +126,11 @@ const IdeaCard = ({ idea }) => {
       return;
     }
 
+    if (postAsNewIdea && !newIdeaTitle.trim()) {
+      toast.error('Please add a title for your new idea');
+      return;
+    }
+
     setReplying(true);
     try {
       const formData = new FormData();
@@ -135,21 +140,35 @@ const IdeaCard = ({ idea }) => {
         formData.append('images', image);
       });
 
-      await axios.post(
-        `${API}/ideas/${idea.id}/comments`,
-        formData,
-        { 
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          } 
-        }
-      );
+      let endpoint;
+      let successMessage;
+
+      if (postAsNewIdea) {
+        // Post as a new top-level idea
+        formData.append('title', newIdeaTitle);
+        formData.append('category_id', idea.category_id || '');
+        formData.append('city_id', idea.city_id || '');
+        endpoint = `${API}/ideas`;
+        successMessage = 'New idea posted!';
+      } else {
+        // Post as a comment/reply
+        endpoint = `${API}/ideas/${idea.id}/comments`;
+        successMessage = 'Reply posted!';
+      }
+
+      await axios.post(endpoint, formData, { 
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        } 
+      });
       
-      toast.success('Reply posted!');
+      toast.success(successMessage);
       setReplyBody('');
       setReplyImages([]);
       setReplyImagePreviews([]);
+      setNewIdeaTitle('');
+      setPostAsNewIdea(false);
       setShowReply(false);
       // Don't refresh feed - keeps scroll position stable
     } catch (error) {
