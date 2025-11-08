@@ -567,6 +567,18 @@ const IdeaDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Promote Modal */}
+      {promoteIdeaId && (
+        <PromoteModal
+          idea={allIdeas.find(i => i.id === promoteIdeaId)}
+          onClose={() => setPromoteIdeaId(null)}
+          onSuccess={() => {
+            fetchIdea();
+            navigate('/');
+          }}
+        />
+      )}
     </div>
   );
 };
