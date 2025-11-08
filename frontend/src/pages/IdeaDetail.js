@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { API, AuthContext } from '../App';
+import { API, BACKEND_URL, AuthContext } from '../App';
 import axios from 'axios';
 import { toast } from 'sonner';
 import Navbar from '../components/Navbar';
