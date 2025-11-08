@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AuthContext } from '../App';
+import { AuthContext, BACKEND_URL } from '../App';
 import { Button } from './ui/button';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Lightbulb, Map, Users, LogOut, Plus, Bookmark } from 'lucide-react';
 import NotificationCenter from './NotificationCenter';
 import {
