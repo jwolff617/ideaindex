@@ -483,6 +483,45 @@ const IdeaCard = ({ idea }) => {
               </div>
             </div>
           )}
+
+          {/* Top Comments */}
+          {idea.top_comments && idea.top_comments.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200" onClick={(e) => e.stopPropagation()}>
+              <div className="space-y-3">
+                {idea.top_comments.map((comment) => (
+                  <div key={comment.id} className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex flex-col items-center space-y-1">
+                        <ArrowUp size={14} className="text-emerald-600" />
+                        <span className="text-xs font-semibold text-emerald-600">{comment.upvotes}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-700 mb-2 line-clamp-3">{comment.body}</p>
+                        <div className="flex items-center space-x-2 text-xs text-gray-500">
+                          <span className="font-medium">{comment.author?.name}</span>
+                          <span>·</span>
+                          <span>{formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* View all comments link */}
+              {idea.comments_count > idea.top_comments.length && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/ideas/${idea.id}`);
+                  }}
+                  className="mt-3 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                >
+                  View all {idea.comments_count} comments →
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
