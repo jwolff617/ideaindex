@@ -277,6 +277,17 @@ const IdeaDetail = () => {
       <Navbar />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-4">
+          <Link 
+            to="/" 
+            className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center space-x-1"
+          >
+            <ChevronLeft size={16} />
+            <span>Back to All Ideas</span>
+          </Link>
+        </div>
+
         {/* Header Info */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
           <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
@@ -286,12 +297,18 @@ const IdeaDetail = () => {
           
           {mainIdea.category && (
             <div className="flex items-center flex-wrap gap-2">
-              <Badge className="bg-emerald-50 text-emerald-700">{mainIdea.category}</Badge>
-              {mainIdea.city && (
-                <Badge variant="outline" className="flex items-center space-x-1">
-                  <MapPin size={12} />
-                  <span>{mainIdea.city}</span>
+              <Link to={`/?category=${mainIdea.category_id}`}>
+                <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 cursor-pointer transition-colors">
+                  {mainIdea.category}
                 </Badge>
+              </Link>
+              {mainIdea.city && (
+                <Link to={`/?city=${mainIdea.city_id}`}>
+                  <Badge variant="outline" className="flex items-center space-x-1 hover:bg-gray-50 cursor-pointer transition-colors">
+                    <MapPin size={12} />
+                    <span>{mainIdea.city}</span>
+                  </Badge>
+                </Link>
               )}
             </div>
           )}
