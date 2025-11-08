@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext, API } from '../App';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { X, Mail, Lock, User, UserCircle } from 'lucide-react';
+import { X, Mail, Lock, User, UserCircle, Eye, EyeOff } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -10,6 +10,8 @@ import { Label } from './ui/label';
 const AuthModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     username: '',
