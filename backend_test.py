@@ -664,6 +664,428 @@ def test_cors_and_headers(results):
     except Exception as e:
         results.add_result("CORS Headers", False, f"CORS check error: {str(e)}")
 
+def create_test_profile_image(width=800, height=600, format="JPEG", color='blue'):
+    """Create a test image for profile picture testing with specific dimensions"""
+    img = Image.new('RGB', (width, height), color=color)
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format=format)
+    img_bytes.seek(0)
+    return img_bytes
+
+def create_png_with_transparency():
+    """Create a PNG image with transparency for testing RGBA to RGB conversion"""
+    img = Image.new('RGBA', (300, 300), (255, 0, 0, 0))  # Transparent red
+    # Add some opaque content
+    for x in range(100, 200):
+        for y in range(100, 200):
+            img.putpixel((x, y), (0, 255, 0, 255))  # Opaque green square
+    
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    return img_bytes
+
+def test_profile_picture_authentication(results):
+    """Test profile picture upload authentication requirements"""
+    print("\n=== Testing Profile Picture Authentication ===")
+    
+    # Test 1: Upload without authentication (should fail with 401)
+    test_image = create_test_profile_image()
+    files = {'image': ('profile_test.jpg', test_image, 'image/jpeg')}
+    
+    try:
+        response = requests.post(f"{API_BASE}/upload-profile-picture", files=files)
+        if response.status_code == 401:
+            results.add_result("Profile Upload No Auth", True, "Correctly rejected request without authentication")
+        else:
+            results.add_result("Profile Upload No Auth", False, 
+                             f"Should reject no auth, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Profile Upload No Auth", False, f"Error: {str(e)}")
+    
+    # Test 2: Upload with invalid token (should fail with 401)
+    invalid_headers = {"Authorization": "Bearer invalid_token_12345"}
+    test_image = create_test_profile_image()
+    files = {'image': ('profile_test.jpg', test_image, 'image/jpeg')}
+    
+    try:
+        response = requests.post(f"{API_BASE}/upload-profile-picture", headers=invalid_headers, files=files)
+        if response.status_code == 401:
+            results.add_result("Profile Upload Invalid Token", True, "Correctly rejected invalid token")
+        else:
+            results.add_result("Profile Upload Invalid Token", False, 
+                             f"Should reject invalid token, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Profile Upload Invalid Token", False, f"Error: {str(e)}")
+
+def test_profile_picture_upload_success(results):
+    """Test successful profile picture upload cases"""
+    print("\n=== Testing Profile Picture Upload Success Cases ===")
+    
+    if not results.auth_token:
+        results.add_result("Profile Picture Upload", False, "No auth token available")
+        return None
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # Test 1: Upload JPEG image
+    print("\n--- Testing JPEG upload ---")
+    test_image = create_test_profile_image(600, 800, "JPEG", 'red')  # Portrait orientation
+    files = {'image': ('profile_test.jpg', test_image, 'image/jpeg')}
+    
+    try:
+        response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files)
+        
+        if response.status_code == 200:
+            data = response.json()
+            avatar_url = data.get('avatar_url')
+            
+            if avatar_url and avatar_url.startswith('/api/uploads/profile_'):
+                results.add_result("Profile JPEG Upload", True, 
+                                 f"JPEG profile picture uploaded successfully: {avatar_url}")
+                
+                # Test if image is accessible
+                image_full_url = f"{BACKEND_URL}{avatar_url}"
+                img_response = requests.get(image_full_url)
+                if img_response.status_code == 200:
+                    results.add_result("Profile JPEG Serving", True, 
+                                     f"Profile image accessible at {image_full_url}")
+                    return avatar_url
+                else:
+                    results.add_result("Profile JPEG Serving", False, 
+                                     f"Profile image not accessible: {img_response.status_code}")
+            else:
+                results.add_result("Profile JPEG Upload", False, 
+                                 f"Invalid avatar_url format: {avatar_url}")
+        else:
+            results.add_result("Profile JPEG Upload", False, 
+                             f"JPEG upload failed: {response.status_code}", {"response": response.text})
+    except Exception as e:
+        results.add_result("Profile JPEG Upload", False, f"Error: {str(e)}")
+    
+    return None
+
+def test_profile_picture_png_transparency(results):
+    """Test PNG with transparency handling (RGBA to RGB conversion)"""
+    print("\n=== Testing PNG Transparency Handling ===")
+    
+    if not results.auth_token:
+        results.add_result("PNG Transparency", False, "No auth token available")
+        return None
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # Create PNG with transparency
+    png_image = create_png_with_transparency()
+    files = {'image': ('profile_transparent.png', png_image, 'image/png')}
+    
+    try:
+        response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files)
+        
+        if response.status_code == 200:
+            data = response.json()
+            avatar_url = data.get('avatar_url')
+            
+            if avatar_url and avatar_url.endswith('.jpg'):  # Should be converted to JPEG
+                results.add_result("PNG Transparency Conversion", True, 
+                                 f"PNG with transparency converted to JPEG: {avatar_url}")
+                
+                # Verify the image is accessible and properly converted
+                image_full_url = f"{BACKEND_URL}{avatar_url}"
+                img_response = requests.get(image_full_url)
+                if img_response.status_code == 200:
+                    content_type = img_response.headers.get('content-type', '')
+                    if 'jpeg' in content_type.lower():
+                        results.add_result("PNG to JPEG Conversion", True, 
+                                         f"PNG properly converted to JPEG format")
+                    else:
+                        results.add_result("PNG to JPEG Conversion", False, 
+                                         f"Wrong content type: {content_type}")
+                    return avatar_url
+                else:
+                    results.add_result("PNG Transparency Serving", False, 
+                                     f"Converted image not accessible: {img_response.status_code}")
+            else:
+                results.add_result("PNG Transparency Conversion", False, 
+                                 f"PNG not converted to JPEG: {avatar_url}")
+        else:
+            results.add_result("PNG Transparency Conversion", False, 
+                             f"PNG upload failed: {response.status_code}", {"response": response.text})
+    except Exception as e:
+        results.add_result("PNG Transparency Conversion", False, f"Error: {str(e)}")
+    
+    return None
+
+def test_profile_picture_aspect_ratios(results):
+    """Test different aspect ratios to verify center crop functionality"""
+    print("\n=== Testing Profile Picture Aspect Ratios ===")
+    
+    if not results.auth_token:
+        results.add_result("Aspect Ratio Tests", False, "No auth token available")
+        return
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    test_cases = [
+        ("landscape", 1200, 600, "Landscape image (2:1 ratio)"),
+        ("portrait", 400, 800, "Portrait image (1:2 ratio)"),
+        ("square", 500, 500, "Square image (1:1 ratio)"),
+        ("wide", 1600, 400, "Very wide image (4:1 ratio)")
+    ]
+    
+    success_count = 0
+    
+    for name, width, height, description in test_cases:
+        test_image = create_test_profile_image(width, height, "JPEG", 'purple')
+        files = {'image': (f'profile_{name}.jpg', test_image, 'image/jpeg')}
+        
+        try:
+            response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files)
+            
+            if response.status_code == 200:
+                data = response.json()
+                avatar_url = data.get('avatar_url')
+                
+                if avatar_url:
+                    # Verify the processed image is accessible
+                    image_full_url = f"{BACKEND_URL}{avatar_url}"
+                    img_response = requests.get(image_full_url)
+                    
+                    if img_response.status_code == 200:
+                        success_count += 1
+                        results.add_result(f"Aspect Ratio {name.title()}", True, 
+                                         f"{description} processed successfully")
+                    else:
+                        results.add_result(f"Aspect Ratio {name.title()}", False, 
+                                         f"{description} not accessible after processing")
+                else:
+                    results.add_result(f"Aspect Ratio {name.title()}", False, 
+                                     f"{description} upload returned no avatar_url")
+            else:
+                results.add_result(f"Aspect Ratio {name.title()}", False, 
+                                 f"{description} upload failed: {response.status_code}")
+        except Exception as e:
+            results.add_result(f"Aspect Ratio {name.title()}", False, f"{description} error: {str(e)}")
+    
+    overall_success = success_count == len(test_cases)
+    results.add_result("All Aspect Ratios", overall_success, 
+                     f"{success_count}/{len(test_cases)} aspect ratios processed successfully")
+
+def test_profile_picture_validation(results):
+    """Test file validation and error cases"""
+    print("\n=== Testing Profile Picture Validation ===")
+    
+    if not results.auth_token:
+        results.add_result("Profile Validation", False, "No auth token available")
+        return
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # Test 1: Non-image file (should fail with 400)
+    print("\n--- Testing non-image file ---")
+    text_file = io.BytesIO(b'This is not an image file, it is plain text.')
+    files = {'image': ('not_image.txt', text_file, 'text/plain')}
+    
+    try:
+        response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files)
+        if response.status_code == 400:
+            results.add_result("Non-Image File Validation", True, "Correctly rejected non-image file")
+        else:
+            results.add_result("Non-Image File Validation", False, 
+                             f"Should reject non-image, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Non-Image File Validation", False, f"Error: {str(e)}")
+    
+    # Test 2: Corrupted image file
+    print("\n--- Testing corrupted image ---")
+    corrupted_data = io.BytesIO(b'\xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01corrupted_data_here')
+    files = {'image': ('corrupted.jpg', corrupted_data, 'image/jpeg')}
+    
+    try:
+        response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files)
+        if response.status_code in [400, 500]:
+            results.add_result("Corrupted Image Validation", True, 
+                             f"Correctly handled corrupted image: {response.status_code}")
+        else:
+            results.add_result("Corrupted Image Validation", False, 
+                             f"Unexpected response to corrupted image: {response.status_code}")
+    except Exception as e:
+        results.add_result("Corrupted Image Validation", False, f"Error: {str(e)}")
+    
+    # Test 3: Very large file (>10MB)
+    print("\n--- Testing large file ---")
+    try:
+        # Create a large image (approximately 12MB when saved)
+        large_img = Image.new('RGB', (4000, 3000), color='yellow')
+        large_img_bytes = io.BytesIO()
+        large_img.save(large_img_bytes, format='JPEG', quality=95)
+        large_img_bytes.seek(0)
+        
+        files = {'image': ('large_profile.jpg', large_img_bytes, 'image/jpeg')}
+        
+        response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files, timeout=30)
+        
+        if response.status_code == 200:
+            results.add_result("Large File Upload", True, "Large file processed successfully")
+        elif response.status_code == 413:  # Payload too large
+            results.add_result("Large File Validation", True, "Large file correctly rejected")
+        else:
+            results.add_result("Large File Upload", False, 
+                             f"Large file handling unexpected: {response.status_code}")
+    except Exception as e:
+        results.add_result("Large File Upload", False, f"Large file error: {str(e)}")
+    
+    # Test 4: Missing image field
+    print("\n--- Testing missing image field ---")
+    try:
+        response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers)  # No files
+        if response.status_code == 422:  # Unprocessable Entity (FastAPI validation error)
+            results.add_result("Missing Image Field", True, "Correctly rejected missing image field")
+        else:
+            results.add_result("Missing Image Field", False, 
+                             f"Should reject missing image, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Missing Image Field", False, f"Error: {str(e)}")
+
+def test_profile_picture_database_update(results):
+    """Test that user's avatar_url is updated in database"""
+    print("\n=== Testing Database Update ===")
+    
+    if not results.auth_token:
+        results.add_result("Database Update", False, "No auth token available")
+        return
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # First, get current user info to check avatar_url before upload
+    try:
+        user_response = requests.get(f"{API_BASE}/me", headers=headers)
+        if user_response.status_code != 200:
+            results.add_result("Database Update", False, "Could not fetch user info")
+            return
+        
+        user_before = user_response.json()
+        avatar_before = user_before.get('avatar_url', '')
+        
+        # Upload a new profile picture
+        test_image = create_test_profile_image(400, 400, "JPEG", 'green')
+        files = {'image': ('db_test_profile.jpg', test_image, 'image/jpeg')}
+        
+        upload_response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files)
+        
+        if upload_response.status_code == 200:
+            upload_data = upload_response.json()
+            new_avatar_url = upload_data.get('avatar_url')
+            
+            # Fetch user info again to verify database update
+            user_response_after = requests.get(f"{API_BASE}/me", headers=headers)
+            if user_response_after.status_code == 200:
+                user_after = user_response_after.json()
+                avatar_after = user_after.get('avatar_url', '')
+                
+                if avatar_after == new_avatar_url and avatar_after != avatar_before:
+                    results.add_result("Database Avatar Update", True, 
+                                     f"User avatar_url updated correctly: {new_avatar_url}")
+                    
+                    # Verify the URL format is correct
+                    if new_avatar_url.startswith('/api/uploads/profile_') and new_avatar_url.endswith('.jpg'):
+                        results.add_result("Avatar URL Format", True, 
+                                         f"Avatar URL format correct: /api/uploads/profile_{{user_id}}_{{uuid}}.jpg")
+                    else:
+                        results.add_result("Avatar URL Format", False, 
+                                         f"Avatar URL format incorrect: {new_avatar_url}")
+                else:
+                    results.add_result("Database Avatar Update", False, 
+                                     f"Avatar URL not updated. Before: {avatar_before}, After: {avatar_after}, Expected: {new_avatar_url}")
+            else:
+                results.add_result("Database Avatar Update", False, 
+                                 "Could not fetch user info after upload")
+        else:
+            results.add_result("Database Avatar Update", False, 
+                             f"Profile upload failed: {upload_response.status_code}")
+    except Exception as e:
+        results.add_result("Database Avatar Update", False, f"Error: {str(e)}")
+
+def test_existing_user_credentials(results):
+    """Test with the specific user credentials mentioned in the review request"""
+    print("\n=== Testing with Existing User Credentials ===")
+    
+    # Try to login with testuser@example.com / password123
+    login_data = {
+        "email": "testuser@example.com",
+        "password": "password123"
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/login", json=login_data)
+        if response.status_code == 200:
+            data = response.json()
+            existing_token = data.get("token")
+            existing_user = data.get("user", {})
+            
+            results.add_result("Existing User Login", True, 
+                             f"Successfully logged in as {existing_user.get('email')}")
+            
+            # Test profile picture upload with existing user
+            if existing_token:
+                headers = {"Authorization": f"Bearer {existing_token}"}
+                test_image = create_test_profile_image(600, 600, "JPEG", 'orange')
+                files = {'image': ('existing_user_profile.jpg', test_image, 'image/jpeg')}
+                
+                upload_response = requests.post(f"{API_BASE}/upload-profile-picture", headers=headers, files=files)
+                
+                if upload_response.status_code == 200:
+                    upload_data = upload_response.json()
+                    avatar_url = upload_data.get('avatar_url')
+                    results.add_result("Existing User Profile Upload", True, 
+                                     f"Profile picture uploaded for existing user: {avatar_url}")
+                    
+                    # Verify image is accessible
+                    if avatar_url:
+                        image_full_url = f"{BACKEND_URL}{avatar_url}"
+                        img_response = requests.get(image_full_url)
+                        if img_response.status_code == 200:
+                            results.add_result("Existing User Image Access", True, 
+                                             f"Profile image accessible for existing user")
+                        else:
+                            results.add_result("Existing User Image Access", False, 
+                                             f"Profile image not accessible: {img_response.status_code}")
+                else:
+                    results.add_result("Existing User Profile Upload", False, 
+                                     f"Profile upload failed for existing user: {upload_response.status_code}")
+        else:
+            results.add_result("Existing User Login", False, 
+                             f"Could not login with testuser@example.com: {response.status_code}")
+    except Exception as e:
+        results.add_result("Existing User Login", False, f"Error: {str(e)}")
+
+def test_profile_picture_comprehensive(results):
+    """Run comprehensive profile picture upload tests"""
+    print("\n" + "="*60)
+    print("🖼️  PROFILE PICTURE UPLOAD TESTING")
+    print("="*60)
+    
+    # Test authentication requirements
+    test_profile_picture_authentication(results)
+    
+    # Test successful upload cases
+    avatar_url = test_profile_picture_upload_success(results)
+    
+    # Test PNG transparency handling
+    test_profile_picture_png_transparency(results)
+    
+    # Test different aspect ratios (center crop verification)
+    test_profile_picture_aspect_ratios(results)
+    
+    # Test validation and error cases
+    test_profile_picture_validation(results)
+    
+    # Test database update
+    test_profile_picture_database_update(results)
+    
+    # Test with existing user credentials
+    test_existing_user_credentials(results)
+
 def main():
     """Run all image upload and serving tests"""
     print("🧪 Starting Comprehensive Backend Image Upload Tests")
