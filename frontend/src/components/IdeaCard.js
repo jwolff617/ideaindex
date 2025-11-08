@@ -182,7 +182,7 @@ const IdeaCard = ({ idea }) => {
       let successMessage;
 
       if (postAsNewIdea) {
-        // Post as a new top-level idea
+        // Post as a new Outdexed idea
         formData.append('title', newIdeaTitle);
         formData.append('category_id', idea.category_id || '');
         formData.append('city_id', idea.city_id || '');
