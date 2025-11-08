@@ -250,12 +250,28 @@ const IdeaCard = ({ idea }) => {
           {/* Categories and tags */}
           <div className="flex items-center flex-wrap gap-2 mb-3" onClick={(e) => e.stopPropagation()}>
             {idea.category && (
-              <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100" data-testid="idea-category">
+              <Badge 
+                variant="secondary" 
+                className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 cursor-pointer transition-colors" 
+                data-testid="idea-category"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/?category=${idea.category_id}`);
+                }}
+              >
                 {idea.category}
               </Badge>
             )}
             {idea.city && (
-              <Badge variant="outline" className="flex items-center space-x-1" data-testid="idea-city">
+              <Badge 
+                variant="outline" 
+                className="flex items-center space-x-1 hover:bg-gray-50 cursor-pointer transition-colors" 
+                data-testid="idea-city"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/?city=${idea.city_id}`);
+                }}
+              >
                 <MapPin size={12} />
                 <span>{idea.city}</span>
               </Badge>
@@ -265,6 +281,10 @@ const IdeaCard = ({ idea }) => {
                 key={idx}
                 variant="outline"
                 className="text-xs text-blue-600 border-blue-300 hover:bg-blue-50 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/?tag=${tag}`);
+                }}
               >
                 #{tag}
               </Badge>
