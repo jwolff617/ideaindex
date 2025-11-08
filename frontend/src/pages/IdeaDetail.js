@@ -443,17 +443,17 @@ const IdeaDetail = () => {
 
                           {/* Action buttons */}
                           <div className="flex items-center space-x-2">
-                            {/* Reply/Idea button */}
+                            {/* Idea button */}
                             {user && (
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => setReplyToId(replyToId === idea.id ? null : idea.id)}
-                                className="text-sm"
+                                className="text-sm text-gray-500"
                                 data-testid="reply-button"
                               >
                                 <MessageCircle size={14} className="mr-1" />
-                                Reply
+                                Idea
                               </Button>
                             )}
                             
@@ -462,8 +462,8 @@ const IdeaDetail = () => {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => toast.info('Bookmark feature ready - implement save')}
-                                className="text-sm"
+                                onClick={() => toast.info('Bookmark feature ready')}
+                                className="text-sm text-gray-500"
                               >
                                 <Bookmark size={14} />
                               </Button>
@@ -478,33 +478,22 @@ const IdeaDetail = () => {
                                 navigator.clipboard.writeText(url);
                                 toast.success('Link copied!');
                               }}
-                              className="text-sm"
+                              className="text-sm text-gray-500"
                             >
                               <Share2 size={14} />
                             </Button>
                             
-                            {/* Delete/Draft buttons (author only) */}
+                            {/* Delete button (author only) */}
                             {user && idea.author?.id === user.id && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setDraftConfirm(idea.id)}
-                                  className="text-sm text-amber-600 hover:text-amber-700"
-                                  title="Save for later (draft)"
-                                >
-                                  <Archive size={14} />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setDeleteConfirm(idea.id)}
-                                  className="text-sm text-red-600 hover:text-red-700"
-                                  title="Delete idea"
-                                >
-                                  <Trash2 size={14} />
-                                </Button>
-                              </>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setDeleteConfirm(idea.id)}
+                                className="text-sm text-gray-400 hover:text-red-600"
+                                title="Delete"
+                              >
+                                <Trash2 size={14} />
+                              </Button>
                             )}
                           </div>
                         </div>
