@@ -949,6 +949,7 @@ async def edit_idea(
     body: Optional[str] = Form(None),
     category_id: Optional[str] = Form(None),
     tags: Optional[str] = Form(None),
+    is_draft: Optional[bool] = Form(None),
     user: User = Depends(check_email_verified)
 ):
     """Edit an existing idea (only by the author)"""
