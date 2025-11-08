@@ -696,13 +696,13 @@ async def get_ideas(
 
 @api_router.post("/ideas")
 async def create_idea(
-    title: Optional[str] = None,
-    body: str = None,
-    category_id: Optional[str] = None,
-    city_id: Optional[str] = None,
-    geo_lat: Optional[float] = None,
-    geo_lon: Optional[float] = None,
-    tags: Optional[str] = None,  # Comma-separated tags
+    title: Optional[str] = Form(None),
+    body: str = Form(None),
+    category_id: Optional[str] = Form(None),
+    city_id: Optional[str] = Form(None),
+    geo_lat: Optional[float] = Form(None),
+    geo_lon: Optional[float] = Form(None),
+    tags: Optional[str] = Form(None),  # Comma-separated tags
     images: List[UploadFile] = File(default=[]),
     user: User = Depends(check_email_verified)
 ):
