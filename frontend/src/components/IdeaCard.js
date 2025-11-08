@@ -550,15 +550,15 @@ const IdeaCard = ({ idea }) => {
                     <span>Add images</span>
                   </label>
 
-                  {/* Post as Level 1 checkbox - subtle */}
+                  {/* Post as Outdexed checkbox */}
                   <label className="flex items-center space-x-2 text-sm text-gray-500 hover:text-gray-700 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={postAsNewIdea}
                       onChange={(e) => handlePostAsNewIdeaChange(e.target.checked)}
-                      className="w-3.5 h-3.5 text-emerald-600 rounded"
+                      className="w-3.5 h-3.5 text-gray-400 rounded"
                     />
-                    <span>Post as Level 1</span>
+                    <span>Outdexed</span>
                   </label>
                 </div>
 
