@@ -133,7 +133,7 @@ const IdeaCard = ({ idea }) => {
       setReplyImages([]);
       setReplyImagePreviews([]);
       setShowReply(false);
-      if (onUpdate) onUpdate();
+      // Don't refresh feed - keeps scroll position stable
     } catch (error) {
       console.error('Reply error:', error);
       let errorMessage = 'Failed to post reply';
