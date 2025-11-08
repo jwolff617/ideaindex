@@ -232,8 +232,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Image Display in IdeaDetail"
-    - "Export BACKEND_URL from App.js"
+    - "Profile Picture Upload Backend"
+    - "Profile Picture Upload Frontend"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
