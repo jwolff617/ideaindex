@@ -329,27 +329,35 @@ async def verify_email_auto(user: User = Depends(get_current_user)):
     await db.users.update_one({"id": user.id}, {"$set": {"is_verified_email": True}})
     return {"message": "Email verified successfully"}
 
-@api_router.post("/reset-password")
-async def reset_password(email: EmailStr, new_password: str):
-    """Reset password for MVP - no email verification needed"""
-    user_data = await db.users.find_one({"email": email}, {"_id": 0})
+@api_router.post("/change-password")
+async def change_password(
+    current_password: str,
+    new_password: str,
+    user: User = Depends(check_email_verified)
+):
+    """Change password - requires authentication and current password verification"""
+    # Get user with password hash
+    user_data = await db.users.find_one({"id": user.id})
     if not user_data:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    # Verify current password
+    if not bcrypt.checkpw(current_password.encode('utf-8'), user_data['password_hash'].encode('utf-8')):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    # Validate new password
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
     
     # Hash new password
     password_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     await db.users.update_one(
-        {"email": email},
+        {"id": user.id},
         {"$set": {"password_hash": password_hash}}
     )
     
-    print(f"\n=== PASSWORD RESET ===")
-    print(f"Email: {email}")
-    print(f"New password has been set")
-    print(f"=====================\n")
-    
-    return {"message": "Password reset successfully"}
+    return {"message": "Password changed successfully"}
 
 @api_router.get("/me")
 async def get_me(user: User = Depends(get_current_user)):
