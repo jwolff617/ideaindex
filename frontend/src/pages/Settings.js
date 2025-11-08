@@ -192,7 +192,7 @@ const Settings = () => {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={settings.email_notifications}
+                      checked={settings.email_notifications || false}
                       onChange={(e) => setSettings({...settings, email_notifications: e.target.checked})}
                       className="sr-only peer"
                     />
