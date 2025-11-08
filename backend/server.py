@@ -810,7 +810,7 @@ class CommentCreate(BaseModel):
 @api_router.post("/ideas/{idea_id}/comments")
 async def create_comment(
     idea_id: str,
-    body: str = None,
+    body: str = Form(None),
     images: List[UploadFile] = File(default=[]),
     user: User = Depends(check_email_verified)
 ):
