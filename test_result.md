@@ -151,11 +151,11 @@ backend:
 frontend:
   - task: "Image Display in IdeaDetail"
     implemented: true
-    working: "needs_testing"
+    working: true
     file: "frontend/src/pages/IdeaDetail.js"
-    stuck_count: 3
+    stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -166,18 +166,24 @@ frontend:
       - working: "needs_testing"
         agent: "main"
         comment: "Frontend now constructs URLs as: BACKEND_URL + attachment where attachment is /api/uploads/filename"
+      - working: true
+        agent: "main"
+        comment: "✅ VERIFIED WORKING! Screenshot confirms red JPEG test image displays correctly. Image URL: https://swapideas.preview.emergentagent.com/api/uploads/48abb75a-34d4-457c-8a29-cfc75e392386.jpg. Frontend properly constructs URLs using BACKEND_URL."
 
   - task: "Export BACKEND_URL from App.js"
     implemented: true
-    working: "needs_testing"
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "needs_testing"
         agent: "main"
         comment: "Exported BACKEND_URL constant so other components can construct correct image URLs"
+      - working: true
+        agent: "main"
+        comment: "✅ VERIFIED WORKING! BACKEND_URL successfully exported and used in IdeaDetail component."
 
 metadata:
   created_by: "main_agent"
