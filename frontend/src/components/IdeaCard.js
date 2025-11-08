@@ -488,15 +488,42 @@ const IdeaCard = ({ idea }) => {
 
               {/* Title field for new ideas */}
               {postAsNewIdea && (
-                <div className="mb-2">
+                <div className="mb-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-gray-700">Idea Title</label>
+                    <button
+                      type="button"
+                      onClick={generateTitleFromBody}
+                      disabled={generatingTitle || !replyBody.trim()}
+                      className="text-xs text-emerald-600 hover:text-emerald-700 disabled:text-gray-400 flex items-center space-x-1"
+                    >
+                      {generatingTitle ? (
+                        <>
+                          <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                          </svg>
+                          <span>Generate with AI</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <Input
                     value={newIdeaTitle}
                     onChange={(e) => setNewIdeaTitle(e.target.value)}
-                    placeholder="Enter a title for your new Level 1 idea..."
+                    placeholder={generatingTitle ? "AI is generating title..." : "Enter title or click 'Generate with AI'"}
                     className="font-semibold"
+                    disabled={generatingTitle}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    This will create a new independent idea with the same category and location
+                  <p className="text-xs text-gray-500">
+                    ✨ AI will auto-generate when you check the box. Edit it or regenerate!
                   </p>
                 </div>
               )}
