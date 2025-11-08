@@ -114,11 +114,11 @@ user_problem_statement: |
 backend:
   - task: "Image Upload and Serving"
     implemented: true
-    working: "needs_testing"
+    working: true
     file: "backend/server.py"
     stuck_count: 3
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -129,18 +129,24 @@ backend:
       - working: "needs_testing"
         agent: "main"
         comment: "Backend changes complete: 1) Mount at /api/uploads 2) Store paths as /api/uploads/filename 3) Created migration endpoint"
+      - working: true
+        agent: "testing"
+        comment: "CRITICAL BUG FIXED: FastAPI endpoints needed Form() declarations for multipart data. Fixed create_idea and create_comment endpoints. All tests passing: ✅ Image upload (JPEG/PNG) ✅ Image serving at /api/uploads/ ✅ Comment images ✅ Path migration ✅ Attachment retrieval. Images now display correctly with proper /api/uploads/ paths."
 
   - task: "Image Path Migration Endpoint"
     implemented: true
-    working: "needs_testing"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "needs_testing"
         agent: "main"
         comment: "Created /api/migrate-image-paths endpoint to update existing images from /uploads/ to /api/uploads/"
+      - working: true
+        agent: "testing"
+        comment: "Migration endpoint working correctly. Successfully migrated 0 ideas (no old paths found). Endpoint accessible and functional."
 
 frontend:
   - task: "Image Display in IdeaDetail"
