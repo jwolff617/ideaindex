@@ -380,7 +380,6 @@ const Settings = () => {
               <p className="text-xs text-gray-500 mt-2">
                 For security, you must enter your current password to change it.
               </p>
-              </form>
             </div>
 
             {/* Save Button */}
