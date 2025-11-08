@@ -86,11 +86,26 @@ const IdeaCard = ({ idea }) => {
     }
   };
 
-  const handleShare = (e) => {
+  const [showShareMenu, setShowShareMenu] = useState(false);
+
+  const handleShare = (e, platform) => {
     e.stopPropagation();
     const url = `${window.location.origin}/ideas/${idea.id}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard!');
+    const text = `${idea.title} - Idea Index`;
+    
+    switch(platform) {
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(url);
+        toast.success('Link copied to clipboard!');
+        break;
+    }
+    setShowShareMenu(false);
   };
 
   const handleReplyClick = (e) => {
