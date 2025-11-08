@@ -163,6 +163,18 @@ backend:
         agent: "testing"
         comment: "COMPREHENSIVE FRESH DATA TESTING COMPLETED (17/17 tests passed): ✅ Created verified test user (testuser@example.com) ✅ Created 5 test ideas across 3 cities (New York, Chicago, Los Angeles) ✅ Ideas include images, URLs, and proper categorization ✅ All functionality verified: upvoting, commenting, map coordinates, image serving ✅ URL preview working ✅ Coordinate backfill working ✅ All backend APIs fully operational for test scenarios. Test data successfully created and accessible."
 
+  - task: "Profile Picture Upload Backend"
+    implemented: true
+    working: "needs_testing"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "needs_testing"
+        agent: "main"
+        comment: "Implemented backend endpoint /api/upload-profile-picture. Features: 1) Accepts image file upload 2) Smart resizing to 400x400 with center crop 3) Handles transparency (RGBA to RGB) 4) Saves as optimized JPEG 5) Stores path in user.avatar_url 6) Returns /api/uploads/profile_{user_id}_{uuid}.jpg path. Uses Pillow for image processing."
+
 frontend:
   - task: "Image Display in IdeaDetail"
     implemented: true
