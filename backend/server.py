@@ -999,6 +999,9 @@ async def edit_idea(
         tag_list = [t.strip().lower() for t in tags.split(',') if t.strip()]
         update_data['tags'] = tag_list
     
+    if is_draft is not None:
+        update_data['is_draft'] = is_draft
+    
     # Convert datetime for MongoDB
     update_data['updated_at'] = update_data['updated_at'].isoformat()
     
