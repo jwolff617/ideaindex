@@ -13,8 +13,12 @@ import { toast } from 'sonner';
 
 const LeaderProfile = () => {
   const { username } = useParams();
+  const { user, token } = useContext(AuthContext);
   const [leader, setLeader] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     fetchLeader();
