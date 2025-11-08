@@ -89,8 +89,10 @@ const PromoteModal = ({ idea, onClose, onSuccess }) => {
         <div className="p-6 space-y-6">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              <strong>What is Level 1?</strong> A top-level idea that stands independently. 
-              It will inherit the category and location from its parent, but you can edit everything.
+              <strong>🤖 AI Title Generation:</strong> Our AI analyzes your idea and automatically generates a compelling title when this modal opens. You can edit it or click "Regenerate" for alternatives.
+            </p>
+            <p className="text-sm text-blue-800 mt-2">
+              <strong>What is Level 1?</strong> An independent top-level idea. Inherits category/location but you can edit everything.
             </p>
           </div>
 
