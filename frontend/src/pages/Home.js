@@ -186,6 +186,18 @@ const Home = () => {
       .map(cat => cat.name);
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    if (sortBy === 'leaders') {
+      await fetchLeaders();
+    } else {
+      await fetchIdeas();
+    }
+    await fetchTrendingTags();
+    setRefreshing(false);
+  };
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
       <Navbar />
