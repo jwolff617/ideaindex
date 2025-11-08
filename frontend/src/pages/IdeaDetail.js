@@ -437,6 +437,19 @@ const IdeaDetail = () => {
 
                           {/* Action buttons */}
                           <div className="flex items-center space-x-2">
+                            {/* Promote to Level 1 (only for nested ideas & author) */}
+                            {user && idea.author?.id === user.id && idea.parent_id && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setPromoteIdeaId(idea.id)}
+                                className="text-sm border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                              >
+                                <TrendingUp size={14} className="mr-1" />
+                                Promote to Level 1
+                              </Button>
+                            )}
+                            
                             {/* Edit button (only for author) */}
                             {user && idea.author?.id === user.id && (
                               <Button
