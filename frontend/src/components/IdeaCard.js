@@ -530,26 +530,39 @@ const IdeaCard = ({ idea }) => {
                 </div>
               )}
 
-              <div className="flex items-center space-x-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleReplyImageSelect}
-                  className="hidden"
-                  id={`reply-image-${idea.id}`}
-                />
-                <label
-                  htmlFor={`reply-image-${idea.id}`}
-                  className="cursor-pointer text-sm text-gray-500 hover:text-emerald-600 flex items-center space-x-1"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                  </svg>
-                  <span>Add images</span>
-                </label>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleReplyImageSelect}
+                    className="hidden"
+                    id={`reply-image-${idea.id}`}
+                  />
+                  <label
+                    htmlFor={`reply-image-${idea.id}`}
+                    className="cursor-pointer text-sm text-gray-500 hover:text-emerald-600 flex items-center space-x-1"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                    </svg>
+                    <span>Add images</span>
+                  </label>
 
-                <div className="flex-1"></div>
+                  {/* Post as Level 1 checkbox - subtle */}
+                  <label className="flex items-center space-x-2 text-sm text-gray-500 hover:text-gray-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={postAsNewIdea}
+                      onChange={(e) => handlePostAsNewIdeaChange(e.target.checked)}
+                      className="w-3.5 h-3.5 text-emerald-600 rounded"
+                    />
+                    <span>Post as Level 1</span>
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
 
                 <Button
                   variant="ghost"
