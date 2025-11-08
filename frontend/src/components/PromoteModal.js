@@ -169,7 +169,7 @@ const PromoteModal = ({ idea, onClose, onSuccess }) => {
             ) : (
               <>
                 <TrendingUp size={16} className="mr-2" />
-                Create Level 1 Idea
+                Create Outdexed Idea
               </>
             )}
           </Button>
