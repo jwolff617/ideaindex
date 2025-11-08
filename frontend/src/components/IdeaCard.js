@@ -27,6 +27,7 @@ const IdeaCard = ({ idea }) => {
   const [replying, setReplying] = useState(false);
   const [postAsNewIdea, setPostAsNewIdea] = useState(false);
   const [newIdeaTitle, setNewIdeaTitle] = useState('');
+  const [generatingTitle, setGeneratingTitle] = useState(false);
 
   const handleVote = async (e, voteValue) => {
     e.stopPropagation();
