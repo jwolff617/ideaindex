@@ -41,34 +41,6 @@ const AuthModal = ({ onClose }) => {
     }
   };
 
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    if (!resetEmail || !newPassword) {
-      toast.error('Please enter both email and new password');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await axios.post(`${API}/reset-password`, null, {
-        params: {
-          email: resetEmail,
-          new_password: newPassword
-        }
-      });
-      
-      toast.success('Password reset successfully! You can now login.');
-      setShowForgotPassword(false);
-      setIsLogin(true);
-      setResetEmail('');
-      setNewPassword('');
-    } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to reset password');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" data-testid="auth-modal">
       <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl">
