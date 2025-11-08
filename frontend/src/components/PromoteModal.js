@@ -145,14 +145,6 @@ const PromoteModal = ({ idea, onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* Info */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <p className="text-sm text-amber-800">
-              <strong>Note:</strong> This will create a new top-level idea. 
-              Your original reply will remain in its current thread. 
-              The new Level 1 idea will start with 0 upvotes.
-            </p>
-          </div>
         </div>
 
         {/* Footer */}
