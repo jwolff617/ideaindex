@@ -57,7 +57,7 @@ const PromoteModal = ({ idea, onClose, onSuccess }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      toast.success('Promoted to Level 1! 🎉');
+      toast.success('Promoted to Outdexed! 🎉');
       onSuccess();
       onClose();
     } catch (error) {
