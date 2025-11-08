@@ -205,7 +205,7 @@ const Settings = () => {
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
                     <Label>Auto-Generate Titles</Label>
-                    <p className="text-sm text-gray-500">AI suggests titles for Level 1 ideas</p>
+                    <p className="text-sm text-gray-500">AI suggests titles for Outdexed ideas</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
