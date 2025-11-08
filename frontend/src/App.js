@@ -12,6 +12,7 @@ import SubmitIdea from './pages/SubmitIdea';
 import Collections from './pages/Collections';
 import Settings from './pages/Settings';
 import AuthModal from './components/AuthModal';
+import AIChat from './components/AIChat';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
