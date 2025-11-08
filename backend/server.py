@@ -442,6 +442,12 @@ async def generate_title(
         # Clean up the title (remove quotes if AI added them)
         title = title.strip().strip('"').strip("'")
         
+        return {"title": title}
+    except Exception as e:
+        logging.error(f"AI title generation failed: {e}")
+        # Fallback: Use first sentence or truncated body
+        fallback_title = body.split('.')[0][:50] + ('...' if len(body) > 50 else '')
+        return {"title": fallback_title}
 
 @api_router.post("/spellcheck")
 async def spellcheck_text(
@@ -465,6 +471,7 @@ async def spellcheck_text(
         return {"corrected": corrected.strip()}
     except Exception as e:
         logging.error(f"Spellcheck failed: {e}")
+        return {"corrected": body}  # Return original on failure
 
 @api_router.post("/upload-profile-picture")
 async def upload_profile_picture(
