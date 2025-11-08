@@ -35,18 +35,15 @@ if response.status_code == 200:
     img.save(img_bytes, format='JPEG')
     img_bytes.seek(0)
     
-    # Test idea creation with image
-    files = {
-        'images': ('test.jpg', img_bytes, 'image/jpeg')
-    }
-    
-    data = {
-        'title': 'Test Idea with Image Upload',
-        'body': 'This is a test idea to verify image upload functionality works correctly.'
-    }
+    # Test idea creation with image - try different approach
+    files = [
+        ('images', ('test.jpg', img_bytes, 'image/jpeg')),
+        ('title', (None, 'Test Idea with Image Upload')),
+        ('body', (None, 'This is a test idea to verify image upload functionality works correctly.'))
+    ]
     
     print("Creating idea with image...")
-    idea_response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+    idea_response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files)
     print(f"Idea creation status: {idea_response.status_code}")
     print(f"Response: {idea_response.text}")
     
