@@ -187,9 +187,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Image Upload and Serving"
     - "Image Display in IdeaDetail"
-    - "Image Path Migration Endpoint"
+    - "Export BACKEND_URL from App.js"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
