@@ -75,7 +75,7 @@ const PromoteModal = ({ idea, onClose, onSuccess }) => {
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-teal-50">
           <div className="flex items-center space-x-3">
             <TrendingUp size={24} className="text-emerald-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Promote to Level 1</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Create New Level 1 Idea</h2>
           </div>
           <button
             onClick={onClose}
