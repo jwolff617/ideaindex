@@ -367,7 +367,7 @@ const IdeaDetail = () => {
                         {idea.attachments && idea.attachments.length > 0 && (
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
                             {idea.attachments.map((attachment, idx) => {
-                              const imageUrl = attachment.startsWith('http') ? attachment : `${window.location.origin}${attachment}`;
+                              const imageUrl = attachment.startsWith('http') ? attachment : `${BACKEND_URL}${attachment}`;
                               return (
                                 <img
                                   key={idx}
