@@ -911,6 +911,37 @@ async def create_idea(
     return idea
 
 
+
+def is_minor_edit(old_text: str, new_text: str) -> bool:
+    """Check if edit is minor (typo fix, punctuation) vs major content change"""
+    import difflib
+    
+    # If texts are identical, allow
+    if old_text == new_text:
+        return True
+    
+    # Calculate similarity ratio
+    similarity = difflib.SequenceMatcher(None, old_text.lower(), new_text.lower()).ratio()
+    
+    # If more than 85% similar, consider it minor
+    if similarity >= 0.85:
+        return True
+    
+    # Check character-level changes
+    old_words = old_text.split()
+    new_words = new_text.split()
+    
+    # If word count changed significantly (>20%), it's major
+    if abs(len(old_words) - len(new_words)) > max(len(old_words), len(new_words)) * 0.2:
+        return False
+    
+    # Count how many words changed
+    word_changes = sum(1 for a, b in zip(old_words, new_words) if a.lower() != b.lower())
+    change_ratio = word_changes / max(len(old_words), 1)
+    
+    # If more than 15% of words changed, it's major
+    return change_ratio <= 0.15
+
 @api_router.put("/ideas/{idea_id}")
 async def edit_idea(
     idea_id: str,
