@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import IdeaCard from '../components/IdeaCard';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { Search, TrendingUp, Clock, Users, Filter, X } from 'lucide-react';
+import { Search, TrendingUp, Clock, Users, Filter, X, RefreshCw } from 'lucide-react';
 import {
   Select,
   SelectContent,
