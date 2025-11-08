@@ -168,7 +168,7 @@ const Settings = () => {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={settings.dark_mode}
+                      checked={settings.dark_mode || false}
                       onChange={(e) => setSettings({...settings, dark_mode: e.target.checked})}
                       disabled
                       className="sr-only peer"
