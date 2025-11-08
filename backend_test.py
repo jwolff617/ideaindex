@@ -694,6 +694,8 @@ def main():
         test_edge_cases(results)
         test_specific_user_scenario(results)
         test_form_data_parsing(results)
+        test_frontend_integration_scenarios(results)
+        test_cors_and_headers(results)
     
     # Print summary
     print("\n" + "="*60)
