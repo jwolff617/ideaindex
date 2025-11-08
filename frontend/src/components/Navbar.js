@@ -56,6 +56,17 @@ const Navbar = () => {
               <span>Leaders</span>
             </Link>
 
+            {user && (
+              <Link
+                to="/collections"
+                className={`text-sm font-medium transition-colors hover:text-emerald-600 flex items-center space-x-1 ${isActive('/collections') ? 'text-emerald-600' : 'text-gray-600'}`}
+                data-testid="nav-collections"
+              >
+                <Bookmark size={16} />
+                <span>Saved</span>
+              </Link>
+            )}
+
             {user ? (
               <>
                 <Link to="/submit">
