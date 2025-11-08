@@ -439,6 +439,65 @@ async def generate_title(
         logging.error(f"AI title generation failed: {e}")
         # Fallback: Use first sentence or truncated body
         fallback_title = body.split('.')[0][:50] + ('...' if len(body) > 50 else '')
+
+@api_router.post("/ideas/{idea_id}/promote")
+async def promote_to_level_one(
+    idea_id: str,
+    title: str,
+    category_id: Optional[str] = None,
+    city_id: Optional[str] = None,
+    tags: Optional[str] = None,
+    user: User = Depends(check_email_verified)
+):
+    """Promote a nested idea to Level 1 (top-level)"""
+    idea = await db.ideas.find_one({"id": idea_id})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Check if user is the author
+    if idea['author_id'] != user.id:
+        raise HTTPException(status_code=403, detail="You can only promote your own ideas")
+    
+    # Create a new top-level idea with the same content
+    new_idea_dict = {
+        "id": str(uuid.uuid4()),
+        "title": title,
+        "body": idea['body'],
+        "author_id": user.id,
+        "upvotes": 0,  # Start fresh as Level 1
+        "downvotes": 0,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "category_id": category_id or idea.get('category_id'),
+        "city_id": city_id or idea.get('city_id'),
+        "tags": [t.strip().lower() for t in tags.split(',')] if tags else idea.get('tags', []),
+        "parent_id": None,  # Top-level
+        "attachments": idea.get('attachments', []),
+        "comments_count": 0
+    }
+    
+    # Get category name
+    if new_idea_dict['category_id']:
+        category = await db.categories.find_one({"id": new_idea_dict['category_id']}, {"_id": 0})
+        if category:
+            new_idea_dict['category'] = category['name']
+    
+    # Get city coordinates
+    if new_idea_dict['city_id']:
+        city = await db.cities.find_one({"id": new_idea_dict['city_id']}, {"_id": 0})
+        if city:
+            new_idea_dict['city'] = city['name']
+            new_idea_dict['geo_lat'] = city.get('geo_lat')
+            new_idea_dict['geo_lon'] = city.get('geo_lon')
+    
+    await db.ideas.insert_one(new_idea_dict)
+    
+    # Convert datetime for response
+    new_idea_dict['created_at'] = datetime.fromisoformat(new_idea_dict['created_at'])
+    new_idea_dict['updated_at'] = datetime.fromisoformat(new_idea_dict['updated_at'])
+    
+    return new_idea_dict
+
         return {"title": fallback_title}
 
     return user_doc.get('settings', {})
