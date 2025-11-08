@@ -284,6 +284,68 @@ const Settings = () => {
               </div>
             </div>
 
+            {/* Password Change */}
+            <div className="border-t pt-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Change Password</h2>
+              
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                <div>
+                  <Label htmlFor="new-password">New Password</Label>
+                  <div className="relative mt-1">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <Input
+                      id="new-password"
+                      type={showNewPassword ? "text" : "password"}
+                      placeholder="Enter new password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="pl-10 pr-10"
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <div className="relative mt-1">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <Input
+                      id="confirm-password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm new password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="pl-10 pr-10"
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={changingPassword || !newPassword || !confirmPassword}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  <Lock size={16} className="mr-2" />
+                  {changingPassword ? 'Changing...' : 'Change Password'}
+                </Button>
+              </form>
+            </div>
+
             {/* Save Button */}
             <div className="border-t pt-8">
               <Button
