@@ -564,28 +564,31 @@ const IdeaCard = ({ idea }) => {
 
                 <div className="flex items-center space-x-2">
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowReply(false);
-                    setReplyBody('');
-                    setReplyImages([]);
-                    setReplyImagePreviews([]);
-                  }}
-                >
-                  Cancel
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowReply(false);
+                      setReplyBody('');
+                      setReplyImages([]);
+                      setReplyImagePreviews([]);
+                      setPostAsNewIdea(false);
+                      setNewIdeaTitle('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
 
-                <Button
-                  size="sm"
-                  onClick={handleReplySubmit}
-                  disabled={replying}
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
-                  {replying ? 'Posting...' : 'Reply'}
-                </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleReplySubmit}
+                    disabled={replying}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    {replying ? 'Posting...' : (postAsNewIdea ? 'Create Level 1' : 'Reply')}
+                  </Button>
+                </div>
               </div>
             </div>
           )}
