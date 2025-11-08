@@ -37,6 +37,7 @@ const Home = () => {
   const [sortBy, setSortBy] = useState('hot');
   const [showType, setShowType] = useState('ideas'); // 'ideas' or 'leaders'
   const [trendingTags, setTrendingTags] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Handle URL parameters for navigation
   useEffect(() => {
