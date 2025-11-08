@@ -118,8 +118,8 @@ const PromoteModal = ({ idea, onClose, onSuccess }) => {
               disabled={generatingTitle}
               className="text-lg font-semibold"
             />
-            <p className="text-xs text-gray-500">
-              AI-generated title (edit as needed)
+            <p className="text-xs text-gray-400">
+              Edit as needed
             </p>
           </div>
 
