@@ -442,6 +442,31 @@ async def generate_title(
         # Clean up the title (remove quotes if AI added them)
         title = title.strip().strip('"').strip("'")
         
+
+@api_router.post("/spellcheck")
+async def spellcheck_text(
+    body: str,
+    user: User = Depends(get_current_user)
+):
+    """Fix spelling and grammar using AI"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    try:
+        chat = LlmChat(
+            api_key=os.environ.get('EMERGENT_LLM_KEY'),
+            session_id=f"spellcheck-{user.id}",
+            system_message="You are a spellcheck assistant. Fix spelling and grammar errors while preserving the original meaning and tone. Return ONLY the corrected text, nothing else. Do not add explanations."
+        ).with_model("openai", "gpt-4o-mini")
+        
+        prompt = f"Fix spelling and grammar:\n\n{body}"
+        
+        corrected = await chat.send_message(UserMessage(text=prompt))
+        
+        return {"corrected": corrected.strip()}
+    except Exception as e:
+        logging.error(f"Spellcheck failed: {e}")
+        return {"corrected": body}  # Return original on failure
+
         return {"title": title}
     except Exception as e:
         logging.error(f"AI title generation failed: {e}")
