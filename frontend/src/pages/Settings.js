@@ -78,8 +78,13 @@ const Settings = () => {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     
+    if (!currentPassword) {
+      toast.error('Please enter your current password');
+      return;
+    }
+    
     if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('New password must be at least 6 characters');
       return;
     }
     
@@ -91,16 +96,18 @@ const Settings = () => {
     setChangingPassword(true);
     try {
       await axios.post(
-        `${API}/reset-password`,
+        `${API}/change-password`,
         null,
         {
           params: {
-            email: user.email,
+            current_password: currentPassword,
             new_password: newPassword
-          }
+          },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
       toast.success('Password changed successfully!');
+      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
