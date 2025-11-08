@@ -427,10 +427,34 @@ const IdeaCard = ({ idea }) => {
           {/* Inline reply form */}
           {showReply && (
             <div className="mt-4 pt-4 border-t border-gray-200" onClick={(e) => e.stopPropagation()}>
+              {/* Post as New Idea Toggle */}
+              <div className="mb-3 flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id={`new-idea-${idea.id}`}
+                  checked={postAsNewIdea}
+                  onChange={(e) => setPostAsNewIdea(e.target.checked)}
+                  className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                />
+                <label htmlFor={`new-idea-${idea.id}`} className="text-sm text-gray-700 cursor-pointer">
+                  Post as New Idea instead of reply
+                </label>
+              </div>
+
+              {/* Title field for new ideas */}
+              {postAsNewIdea && (
+                <Input
+                  value={newIdeaTitle}
+                  onChange={(e) => setNewIdeaTitle(e.target.value)}
+                  placeholder="Idea title..."
+                  className="mb-2"
+                />
+              )}
+
               <Textarea
                 value={replyBody}
                 onChange={(e) => setReplyBody(e.target.value)}
-                placeholder="Write your reply..."
+                placeholder={postAsNewIdea ? "Describe your idea..." : "Write your reply..."}
                 className="mb-2"
                 rows={3}
               />
