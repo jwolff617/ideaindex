@@ -443,36 +443,7 @@ const IdeaDetail = () => {
 
                           {/* Action buttons */}
                           <div className="flex items-center space-x-2">
-                            {/* Create New Level 1 (only for nested ideas & author) */}
-                            {user && idea.author?.id === user.id && idea.parent_id && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setPromoteIdeaId(idea.id)}
-                                className="text-sm border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-semibold"
-                                title="Turn this reply into an independent top-level idea with AI-generated title"
-                              >
-                                <TrendingUp size={14} className="mr-1" />
-                                Create New Level 1 Idea
-                              </Button>
-                            )}
-                            
-                            {/* Edit button (only for author) */}
-                            {user && idea.author?.id === user.id && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => toast.info('Edit feature coming soon!')}
-                                className="text-sm"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                </svg>
-                                Edit
-                              </Button>
-                            )}
-                            
-                            {/* Reply button */}
+                            {/* Reply/Idea button */}
                             {user && (
                               <Button
                                 size="sm"
