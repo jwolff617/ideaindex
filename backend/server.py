@@ -386,6 +386,8 @@ async def update_settings(
     dark_mode: Optional[bool] = None,
     email_notifications: Optional[bool] = None,
     feed_density: Optional[str] = None,
+    auto_spellcheck: Optional[bool] = None,
+    auto_generate_title: Optional[bool] = None,
     user: User = Depends(get_current_user)
 ):
     """Update user settings"""
