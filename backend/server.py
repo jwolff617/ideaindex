@@ -543,7 +543,7 @@ async def promote_to_level_one(
     tags: Optional[str] = None,
     user: User = Depends(check_email_verified)
 ):
-    """Promote a nested idea to Level 1 (top-level)"""
+    """Promote an Indexed idea to Outdexed"""
     idea = await db.ideas.find_one({"id": idea_id})
     if not idea:
         raise HTTPException(status_code=404, detail="Idea not found")
@@ -552,20 +552,20 @@ async def promote_to_level_one(
     if idea['author_id'] != user.id:
         raise HTTPException(status_code=403, detail="You can only promote your own ideas")
     
-    # Create a new top-level idea with the same content
+    # Create a new Outdexed idea with the same content
     new_idea_dict = {
         "id": str(uuid.uuid4()),
         "title": title,
         "body": idea['body'],
         "author_id": user.id,
-        "upvotes": 0,  # Start fresh as Level 1
+        "upvotes": 0,  # Start fresh as Outdexed
         "downvotes": 0,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "category_id": category_id or idea.get('category_id'),
         "city_id": city_id or idea.get('city_id'),
         "tags": [t.strip().lower() for t in tags.split(',')] if tags else idea.get('tags', []),
-        "parent_id": None,  # Top-level
+        "parent_id": None,  # Outdexed
         "attachments": idea.get('attachments', []),
         "comments_count": 0
     }
