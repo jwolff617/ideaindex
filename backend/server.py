@@ -726,6 +726,29 @@ async def get_ideas(
             if city_obj:
                 idea['city'] = city_obj['name']
         
+        # Fetch top 2 comments for this idea (sorted by upvotes)
+        top_comments = await db.ideas.find(
+            {"parent_id": idea['id']},
+            {"_id": 0}
+        ).sort("upvotes", -1).limit(2).to_list(2)
+        
+        # Enrich comments with author info
+        for comment in top_comments:
+            if isinstance(comment.get('created_at'), str):
+                comment['created_at'] = datetime.fromisoformat(comment['created_at'])
+            if isinstance(comment.get('updated_at'), str):
+                comment['updated_at'] = datetime.fromisoformat(comment['updated_at'])
+            
+            comment_author = await db.users.find_one({"id": comment['author_id']}, {"_id": 0, "password_hash": 0})
+            if comment_author:
+                if isinstance(comment_author.get('created_at'), str):
+                    comment_author['created_at'] = datetime.fromisoformat(comment_author['created_at'])
+                if isinstance(comment_author.get('updated_at'), str):
+                    comment_author['updated_at'] = datetime.fromisoformat(comment_author['updated_at'])
+                comment['author'] = comment_author
+        
+        idea['top_comments'] = top_comments
+        
         # Remove hot score from response
         if '_hot_score' in idea:
             del idea['_hot_score']
