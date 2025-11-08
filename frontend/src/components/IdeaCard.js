@@ -429,27 +429,39 @@ const IdeaCard = ({ idea }) => {
           {showReply && (
             <div className="mt-4 pt-4 border-t border-gray-200" onClick={(e) => e.stopPropagation()}>
               {/* Post as New Idea Toggle */}
-              <div className="mb-3 flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id={`new-idea-${idea.id}`}
-                  checked={postAsNewIdea}
-                  onChange={(e) => setPostAsNewIdea(e.target.checked)}
-                  className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                />
-                <label htmlFor={`new-idea-${idea.id}`} className="text-sm text-gray-700 cursor-pointer">
-                  Post as New Idea instead of reply
-                </label>
+              <div className="mb-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <input
+                    type="checkbox"
+                    id={`new-idea-${idea.id}`}
+                    checked={postAsNewIdea}
+                    onChange={(e) => setPostAsNewIdea(e.target.checked)}
+                    className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                  />
+                  <label htmlFor={`new-idea-${idea.id}`} className="text-sm font-semibold text-emerald-900 cursor-pointer">
+                    🆕 Create New Level 1 Idea (instead of reply)
+                  </label>
+                </div>
+                {postAsNewIdea && (
+                  <p className="text-xs text-emerald-700 ml-6">
+                    💡 Your reply becomes an independent idea. Add a title below.
+                  </p>
+                )}
               </div>
 
               {/* Title field for new ideas */}
               {postAsNewIdea && (
-                <Input
-                  value={newIdeaTitle}
-                  onChange={(e) => setNewIdeaTitle(e.target.value)}
-                  placeholder="Idea title..."
-                  className="mb-2"
-                />
+                <div className="mb-2">
+                  <Input
+                    value={newIdeaTitle}
+                    onChange={(e) => setNewIdeaTitle(e.target.value)}
+                    placeholder="Enter a title for your new Level 1 idea..."
+                    className="font-semibold"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This will create a new independent idea with the same category and location
+                  </p>
+                </div>
               )}
 
               <Textarea
