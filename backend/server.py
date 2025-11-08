@@ -929,12 +929,33 @@ async def edit_idea(
     if idea['author_id'] != user.id:
         raise HTTPException(status_code=403, detail="You can only edit your own ideas")
     
+    # Smart editing rules: If idea has upvotes, limit changes
+    upvotes = idea.get('upvotes', 0)
+    has_engagement = upvotes > 0
+    
     # Update fields
     update_data = {"updated_at": datetime.now(timezone.utc)}
     
     if title is not None:
+        if has_engagement:
+            # Allow minor changes only (typos, formatting)
+            old_title = idea.get('title', '')
+            if not is_minor_edit(old_title, title):
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Cannot make major changes to title after receiving upvotes. Only typo fixes allowed."
+                )
         update_data['title'] = title
+        
     if body is not None:
+        if has_engagement:
+            # Allow minor changes only
+            old_body = idea.get('body', '')
+            if not is_minor_edit(old_body, body):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Cannot make major changes to content after receiving upvotes. Only typo/grammar fixes allowed."
+                )
         update_data['body'] = body
     if category_id is not None:
         update_data['category_id'] = category_id
