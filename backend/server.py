@@ -406,6 +406,41 @@ async def update_settings(
     
     # Return updated settings
     user_doc = await db.users.find_one({"id": user.id}, {"_id": 0})
+
+# ============ AI Title Generation ============
+@api_router.post("/generate-title")
+async def generate_title(
+    body: str,
+    user: User = Depends(get_current_user)
+):
+    """Generate a title for an idea using AI"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    try:
+        # Initialize AI chat
+        chat = LlmChat(
+            api_key=os.environ.get('EMERGENT_LLM_KEY'),
+            session_id=f"title-gen-{user.id}",
+            system_message="You are a title generator. Generate concise, compelling titles (3-10 words) for ideas. Return ONLY the title, nothing else."
+        ).with_model("openai", "gpt-4o-mini")
+        
+        # Create prompt
+        prompt = f"Generate a concise, compelling title for this idea:\n\n{body[:500]}"
+        
+        # Get AI response
+        user_message = UserMessage(text=prompt)
+        title = await chat.send_message(user_message)
+        
+        # Clean up the title (remove quotes if AI added them)
+        title = title.strip().strip('"').strip("'")
+        
+        return {"title": title}
+    except Exception as e:
+        logging.error(f"AI title generation failed: {e}")
+        # Fallback: Use first sentence or truncated body
+        fallback_title = body.split('.')[0][:50] + ('...' if len(body) > 50 else '')
+        return {"title": fallback_title}
+
     return user_doc.get('settings', {})
 
 
