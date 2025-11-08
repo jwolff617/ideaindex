@@ -95,13 +95,14 @@ const SubmitIdea = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.body.trim()) {
-      toast.error('Title and body are required');
+    // Require title and either body text or images
+    if (!formData.title.trim()) {
+      toast.error('Title is required');
       return;
     }
 
-    if (formData.body.length < 10) {
-      toast.error('Body must be at least 10 characters');
+    if (!formData.body.trim() && selectedImages.length === 0) {
+      toast.error('Please add some text or an image');
       return;
     }
 
