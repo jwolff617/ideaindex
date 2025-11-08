@@ -41,10 +41,25 @@ if response.status_code == 200:
         'body': 'This is a test idea to verify basic functionality works correctly.'
     }
     
-    print("Creating idea without image...")
-    idea_response = requests.post(f"{API_BASE}/ideas", headers=headers, data=data)
-    print(f"No image status: {idea_response.status_code}")
-    print(f"No image response: {idea_response.text}")
+    # Test with JSON first (no files)
+    print("Creating idea with JSON...")
+    json_data = {
+        'title': 'Test Idea JSON',
+        'body': 'This is a test idea to verify JSON functionality works correctly.'
+    }
+    idea_response = requests.post(f"{API_BASE}/ideas", headers=headers, json=json_data)
+    print(f"JSON status: {idea_response.status_code}")
+    print(f"JSON response: {idea_response.text}")
+    
+    # Test form data without files
+    print("Creating idea with form data...")
+    form_data = {
+        'title': 'Test Idea Form',
+        'body': 'This is a test idea to verify form functionality works correctly.'
+    }
+    idea_response = requests.post(f"{API_BASE}/ideas", headers=headers, data=form_data)
+    print(f"Form status: {idea_response.status_code}")
+    print(f"Form response: {idea_response.text}")
     
     # Now test with image using multipart
     img_bytes.seek(0)  # Reset image buffer
