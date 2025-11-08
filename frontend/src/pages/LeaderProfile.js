@@ -132,11 +132,38 @@ const LeaderProfile = () => {
         {/* Profile Header */}
         <div className="bg-white rounded-2xl p-8 shadow-lg mb-6">
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-            <Avatar className="w-24 h-24 ring-4 ring-emerald-500/20">
-              <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-4xl font-bold">
-                {leader.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            {/* Avatar with Upload */}
+            <div className="relative">
+              <Avatar className="w-24 h-24 ring-4 ring-emerald-500/20">
+                {leader.avatar_url ? (
+                  <AvatarImage 
+                    src={`${BACKEND_URL}${leader.avatar_url}`} 
+                    alt={leader.name}
+                  />
+                ) : null}
+                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-4xl font-bold">
+                  {leader.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Upload button - only visible on own profile */}
+              {isOwnProfile && (
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute bottom-0 right-0 bg-emerald-600 text-white p-2 rounded-full cursor-pointer hover:bg-emerald-700 transition-colors shadow-lg"
+                  title="Upload profile picture"
+                >
+                  <Camera size={16} />
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
 
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold text-gray-900 mb-2" data-testid="profile-name">{leader.name}</h1>
@@ -158,6 +185,42 @@ const LeaderProfile = () => {
               </div>
             </div>
           </div>
+
+          {/* Upload Preview and Actions */}
+          {isOwnProfile && selectedFile && (
+            <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="relative">
+                  <Avatar className="w-20 h-20 ring-2 ring-emerald-500">
+                    <AvatarImage src={previewUrl} alt="Preview" />
+                  </Avatar>
+                  <div className="absolute -top-1 -right-1 bg-emerald-600 text-white rounded-full p-1">
+                    <Upload size={12} />
+                  </div>
+                </div>
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="font-semibold text-gray-900 mb-1">Ready to upload</p>
+                  <p className="text-sm text-gray-600">{selectedFile.name}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleUpload}
+                    disabled={uploading}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    {uploading ? 'Uploading...' : 'Upload'}
+                  </Button>
+                  <Button
+                    onClick={handleCancelUpload}
+                    variant="outline"
+                    disabled={uploading}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Ideas and Comments */}
