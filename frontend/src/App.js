@@ -98,6 +98,7 @@ function App() {
           </Routes>
         </BrowserRouter>
         {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+        <AIChat />
         <Toaster position="top-center" richColors />
       </div>
     </AuthContext.Provider>
