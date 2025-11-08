@@ -1108,6 +1108,26 @@ async def backfill_coordinates():
     
     return {"message": f"Backfilled coordinates for {updated_count} ideas"}
 
+@api_router.post("/migrate-image-paths")
+async def migrate_image_paths():
+    """Migrate existing image paths from /uploads/ to /api/uploads/"""
+    updated_count = 0
+    
+    # Update ideas with attachments
+    ideas = await db.ideas.find({"attachments": {"$exists": True, "$ne": []}}).to_list(length=None)
+    for idea in ideas:
+        old_attachments = idea.get('attachments', [])
+        new_attachments = [att.replace('/uploads/', '/api/uploads/') if att.startswith('/uploads/') else att for att in old_attachments]
+        if old_attachments != new_attachments:
+            await db.ideas.update_one(
+                {"id": idea['id']},
+                {"$set": {"attachments": new_attachments}}
+            )
+            updated_count += 1
+    
+    return {"message": f"Migrated image paths for {updated_count} ideas"}
+
+
 app.include_router(api_router)
 
 app.add_middleware(
