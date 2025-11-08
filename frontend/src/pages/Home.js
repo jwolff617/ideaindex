@@ -38,6 +38,29 @@ const Home = () => {
   const [showType, setShowType] = useState('ideas'); // 'ideas' or 'leaders'
   const [trendingTags, setTrendingTags] = useState([]);
 
+  // Handle URL parameters for navigation
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    const cityParam = searchParams.get('city');
+    const tagParam = searchParams.get('tag');
+    
+    if (categoryParam && categories.length > 0) {
+      // Find category by ID or name
+      const cat = categories.find(c => c.id === categoryParam || c.name === categoryParam);
+      if (cat && !selectedCategories.includes(cat.id)) {
+        setSelectedCategories([cat.id]);
+      }
+    }
+    
+    if (cityParam) {
+      setSelectedCity(cityParam);
+    }
+    
+    if (tagParam) {
+      setSearchQuery(`#${tagParam}`);
+    }
+  }, [searchParams, categories]);
+
   useEffect(() => {
     fetchCategories();
     fetchCities();
