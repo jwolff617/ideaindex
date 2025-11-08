@@ -100,7 +100,7 @@ const MapView = () => {
               />
               {groupedLocations.map((location, idx) => (
                 <Marker key={idx} position={[location.lat, location.lon]}>
-                  <Popup maxWidth={400} maxHeight={500}>
+                  <Popup maxWidth={320} minWidth={280} maxHeight={500} className="custom-popup">
                     <LocationPopup location={location} />
                   </Popup>
                 </Marker>
