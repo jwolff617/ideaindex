@@ -101,3 +101,113 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  Idea Index is a Craigslist-style platform for sharing and ranking ideas with dynamic outline view.
+  CRITICAL BUG: Images uploaded by users were not displaying properly in the frontend.
+  Root cause identified: Image paths were stored as /uploads/filename but Kubernetes ingress was routing
+  /uploads to frontend instead of backend. Fixed by mounting StaticFiles at /api/uploads.
+  
+  NEXT PHASE: Implement X.com/Reddit-style seamless UX with modal overlay system, inline replies,
+  and improved interaction patterns.
+
+backend:
+  - task: "Image Upload and Serving"
+    implemented: true
+    working: "needs_testing"
+    file: "backend/server.py"
+    stuck_count: 3
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported images not displaying - broken icons appearing"
+      - working: "in_progress"
+        agent: "main"
+        comment: "Identified root cause: StaticFiles mounted at /uploads but K8s routes to frontend. Changed to /api/uploads on lines 44, 729, 839"
+      - working: "needs_testing"
+        agent: "main"
+        comment: "Backend changes complete: 1) Mount at /api/uploads 2) Store paths as /api/uploads/filename 3) Created migration endpoint"
+
+  - task: "Image Path Migration Endpoint"
+    implemented: true
+    working: "needs_testing"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "needs_testing"
+        agent: "main"
+        comment: "Created /api/migrate-image-paths endpoint to update existing images from /uploads/ to /api/uploads/"
+
+frontend:
+  - task: "Image Display in IdeaDetail"
+    implemented: true
+    working: "needs_testing"
+    file: "frontend/src/pages/IdeaDetail.js"
+    stuck_count: 3
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Images showing as broken icons despite successful upload"
+      - working: "in_progress"
+        agent: "main"
+        comment: "Updated image URL construction from window.location.origin to BACKEND_URL on line 370"
+      - working: "needs_testing"
+        agent: "main"
+        comment: "Frontend now constructs URLs as: BACKEND_URL + attachment where attachment is /api/uploads/filename"
+
+  - task: "Export BACKEND_URL from App.js"
+    implemented: true
+    working: "needs_testing"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "needs_testing"
+        agent: "main"
+        comment: "Exported BACKEND_URL constant so other components can construct correct image URLs"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Image Upload and Serving"
+    - "Image Display in IdeaDetail"
+    - "Image Path Migration Endpoint"
+  stuck_tasks:
+    - "Image Upload and Serving"
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Image display bug fix implemented:
+      
+      BACKEND CHANGES:
+      1. Changed StaticFiles mount from /uploads to /api/uploads (line 44)
+      2. Updated attachment paths in create_idea and create_comment to use /api/uploads/ (lines 729, 839)
+      3. Added migration endpoint at /api/migrate-image-paths to update existing images
+      
+      FRONTEND CHANGES:
+      1. Exported BACKEND_URL from App.js
+      2. Updated IdeaDetail.js to import and use BACKEND_URL
+      3. Changed image URL construction to use BACKEND_URL instead of window.location.origin
+      
+      TESTING NEEDED:
+      1. Test new image upload - verify it uploads and displays correctly
+      2. Run migration endpoint for existing images
+      3. Verify existing images display after migration
+      4. Test image display on different pages (if applicable)
+      
+      Backend restarted and running successfully.
