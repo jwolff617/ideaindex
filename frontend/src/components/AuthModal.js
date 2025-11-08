@@ -157,11 +157,6 @@ const AuthModal = ({ onClose }) => {
               >
                 {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
               </button>
-              {isLogin && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Forgot password? Change it in Settings after logging in.
-                </p>
-              )}
             </div>
           </>
         )}
