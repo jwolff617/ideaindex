@@ -1090,7 +1090,7 @@ def main():
     """Run all image upload and serving tests"""
     print("🧪 Starting Comprehensive Backend Image Upload Tests")
     print(f"Backend URL: {BACKEND_URL}")
-    print("Testing the complete image upload flow for 'Post Idea' form")
+    print("Testing the complete image upload flow including Profile Picture Upload")
     
     results = TestResults()
     
@@ -1098,7 +1098,10 @@ def main():
     auth_success = test_user_authentication(results)
     
     if auth_success:
-        # Basic functionality tests
+        # PROFILE PICTURE UPLOAD TESTS (NEW FEATURE)
+        test_profile_picture_comprehensive(results)
+        
+        # Basic functionality tests (existing)
         image_path = test_create_idea_with_image(results)
         
         if image_path:
@@ -1112,7 +1115,7 @@ def main():
         test_retrieve_idea_attachments(results)
         test_multiple_image_formats(results)
         
-        # NEW: Comprehensive edge case and error testing
+        # Comprehensive edge case and error testing
         test_edge_cases(results)
         test_specific_user_scenario(results)
         test_form_data_parsing(results)
