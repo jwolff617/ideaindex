@@ -465,37 +465,16 @@ const IdeaCard = ({ idea }) => {
           {/* Inline reply form */}
           {showReply && (
             <div className="mt-4 pt-4 border-t border-gray-200" onClick={(e) => e.stopPropagation()}>
-              {/* Post as New Idea Toggle */}
-              <div className="mb-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <input
-                    type="checkbox"
-                    id={`new-idea-${idea.id}`}
-                    checked={postAsNewIdea}
-                    onChange={(e) => handlePostAsNewIdeaChange(e.target.checked)}
-                    className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                  />
-                  <label htmlFor={`new-idea-${idea.id}`} className="text-sm font-semibold text-emerald-900 cursor-pointer">
-                    🆕 Create New Level 1 Idea (instead of reply)
-                  </label>
-                </div>
-                {postAsNewIdea && (
-                  <p className="text-xs text-emerald-700 ml-6">
-                    💡 Your reply becomes an independent idea. Add a title below.
-                  </p>
-                )}
-              </div>
-
-              {/* Title field for new ideas */}
+              {/* Title field for new Level 1 ideas */}
               {postAsNewIdea && (
-                <div className="mb-2 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-gray-700">Idea Title</label>
+                <div className="mb-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs text-gray-600">Title</label>
                     <button
                       type="button"
                       onClick={generateTitleFromBody}
                       disabled={generatingTitle || !replyBody.trim()}
-                      className="text-xs text-emerald-600 hover:text-emerald-700 disabled:text-gray-400 flex items-center space-x-1"
+                      className="text-xs text-gray-500 hover:text-emerald-600 disabled:text-gray-300 flex items-center space-x-1"
                     >
                       {generatingTitle ? (
                         <>
@@ -506,25 +485,17 @@ const IdeaCard = ({ idea }) => {
                           <span>Generating...</span>
                         </>
                       ) : (
-                        <>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
-                          </svg>
-                          <span>Generate with AI</span>
-                        </>
+                        <span>✨ AI</span>
                       )}
                     </button>
                   </div>
                   <Input
                     value={newIdeaTitle}
                     onChange={(e) => setNewIdeaTitle(e.target.value)}
-                    placeholder={generatingTitle ? "AI is generating title..." : "Enter title or click 'Generate with AI'"}
-                    className="font-semibold"
+                    placeholder={generatingTitle ? "Generating..." : "Idea title..."}
+                    className="text-sm"
                     disabled={generatingTitle}
                   />
-                  <p className="text-xs text-gray-500">
-                    ✨ AI will auto-generate when you check the box. Edit it or regenerate!
-                  </p>
                 </div>
               )}
 
