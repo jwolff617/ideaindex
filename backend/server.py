@@ -465,6 +465,68 @@ async def spellcheck_text(
         return {"corrected": corrected.strip()}
     except Exception as e:
         logging.error(f"Spellcheck failed: {e}")
+
+@api_router.post("/upload-profile-picture")
+async def upload_profile_picture(
+    image: UploadFile = File(...),
+    user: User = Depends(check_email_verified)
+):
+    """Upload and process profile picture with smart resizing"""
+    from PIL import Image
+    import io
+    
+    try:
+        # Validate image type
+        if not image.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Read image
+        contents = await image.read()
+        img = Image.open(io.BytesIO(contents))
+        
+        # Convert to RGB if needed (handle PNG with transparency)
+        if img.mode in ('RGBA', 'LA', 'P'):
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            if img.mode == 'P':
+                img = img.convert('RGBA')
+            background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+            img = background
+        
+        # Smart resize to square (cover style, no weird cropping)
+        size = 400  # Target size
+        width, height = img.size
+        
+        # Calculate scale to cover the square
+        scale = max(size / width, size / height)
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        
+        # Resize image
+        img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        
+        # Center crop to square
+        left = (new_width - size) // 2
+        top = (new_height - size) // 2
+        img = img.crop((left, top, left + size, top + size))
+        
+        # Save optimized image
+        filename = f"profile_{user.id}_{uuid.uuid4()}.jpg"
+        file_path = UPLOADS_DIR / filename
+        img.save(file_path, 'JPEG', quality=85, optimize=True)
+        
+        # Update user's avatar_url
+        avatar_url = f"/api/uploads/{filename}"
+        await db.users.update_one(
+            {"id": user.id},
+            {"$set": {"avatar_url": avatar_url}}
+        )
+        
+        return {"avatar_url": avatar_url}
+        
+    except Exception as e:
+        logging.error(f"Profile picture upload failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload profile picture: {str(e)}")
+
         return {"corrected": body}  # Return original on failure
 
         return {"title": title}
