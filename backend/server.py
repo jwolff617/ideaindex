@@ -726,7 +726,7 @@ async def create_idea(
             with file_path.open('wb') as buffer:
                 shutil.copyfileobj(image.file, buffer)
             
-            attachments.append(f"/uploads/{unique_filename}")
+            attachments.append(f"/api/uploads/{unique_filename}")
     
     # Parse tags
     tags_list = []
@@ -836,7 +836,7 @@ async def create_comment(
             with file_path.open('wb') as buffer:
                 shutil.copyfileobj(image.file, buffer)
             
-            attachments.append(f"/uploads/{unique_filename}")
+            attachments.append(f"/api/uploads/{unique_filename}")
     
     # Use space if no body but has images
     final_body = body.strip() if body and body.strip() else "[Image]"
