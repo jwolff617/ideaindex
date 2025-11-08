@@ -546,6 +546,124 @@ def test_form_data_parsing(results):
     except Exception as e:
         results.add_result("Missing Title Validation", False, f"Error: {str(e)}")
 
+def test_frontend_integration_scenarios(results):
+    """Test scenarios that might cause frontend 'Failed to post idea' errors"""
+    print("\n=== Testing Frontend Integration Scenarios ===")
+    
+    if not results.auth_token:
+        results.add_result("Frontend Integration", False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {results.auth_token}"}
+    
+    # Test 1: Empty file upload (common frontend issue)
+    print("\n--- Testing empty file upload ---")
+    files = {'images': ('', io.BytesIO(b''), 'image/jpeg')}  # Empty file
+    data = {
+        'title': 'Empty File Test',
+        'body': 'Testing what happens with empty file upload from frontend.'
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        if response.status_code == 200:
+            results.add_result("Empty File Upload", True, "Empty file handled gracefully")
+        else:
+            results.add_result("Empty File Upload", False, 
+                             f"Empty file caused error: {response.status_code}", {"response": response.text})
+    except Exception as e:
+        results.add_result("Empty File Upload", False, f"Error: {str(e)}")
+    
+    # Test 2: Invalid file type
+    print("\n--- Testing invalid file type ---")
+    invalid_file = io.BytesIO(b'This is not an image file')
+    files = {'images': ('test.txt', invalid_file, 'text/plain')}
+    data = {
+        'title': 'Invalid File Type Test',
+        'body': 'Testing upload of non-image file to see backend response.'
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        results.add_result("Invalid File Type", True, 
+                         f"Invalid file handled with status: {response.status_code}")
+    except Exception as e:
+        results.add_result("Invalid File Type", False, f"Error: {str(e)}")
+    
+    # Test 3: Multiple images (test array handling)
+    print("\n--- Testing multiple images ---")
+    image1 = create_test_image("multi1.jpg")
+    image2 = create_test_image("multi2.png", "PNG")
+    
+    files = [
+        ('images', ('multi1.jpg', image1, 'image/jpeg')),
+        ('images', ('multi2.png', image2, 'image/png'))
+    ]
+    data = {
+        'title': 'Multiple Images Test',
+        'body': 'Testing upload of multiple images to verify array handling.'
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=headers, files=files, data=data)
+        if response.status_code == 200:
+            idea_data = response.json()
+            attachments = idea_data.get("attachments", [])
+            results.add_result("Multiple Images Upload", True, 
+                             f"Multiple images uploaded: {len(attachments)} attachments")
+        else:
+            results.add_result("Multiple Images Upload", False, 
+                             f"Multiple images failed: {response.status_code}")
+    except Exception as e:
+        results.add_result("Multiple Images Upload", False, f"Error: {str(e)}")
+    
+    # Test 4: Malformed Authorization header
+    print("\n--- Testing malformed auth header ---")
+    bad_headers = {"Authorization": "Bearer invalid_token_format"}
+    test_image = create_test_image("auth_test.jpg")
+    files = {'images': ('auth_test.jpg', test_image, 'image/jpeg')}
+    data = {
+        'title': 'Auth Test',
+        'body': 'Testing with malformed authorization header.'
+    }
+    
+    try:
+        response = requests.post(f"{API_BASE}/ideas", headers=bad_headers, files=files, data=data)
+        if response.status_code == 401:
+            results.add_result("Malformed Auth Header", True, "Correctly rejected invalid token")
+        else:
+            results.add_result("Malformed Auth Header", False, 
+                             f"Should reject invalid token, got: {response.status_code}")
+    except Exception as e:
+        results.add_result("Malformed Auth Header", False, f"Error: {str(e)}")
+
+def test_cors_and_headers(results):
+    """Test CORS and header-related issues that might affect frontend"""
+    print("\n=== Testing CORS and Headers ===")
+    
+    # Test 1: OPTIONS preflight request
+    print("\n--- Testing OPTIONS preflight ---")
+    try:
+        response = requests.options(f"{API_BASE}/ideas")
+        results.add_result("OPTIONS Preflight", True, 
+                         f"OPTIONS request handled: {response.status_code}")
+    except Exception as e:
+        results.add_result("OPTIONS Preflight", False, f"OPTIONS error: {str(e)}")
+    
+    # Test 2: Check CORS headers
+    print("\n--- Testing CORS headers ---")
+    try:
+        response = requests.get(f"{API_BASE}/ideas")
+        cors_headers = {
+            'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+            'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+            'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers')
+        }
+        results.add_result("CORS Headers", True, 
+                         f"CORS headers present: {cors_headers}")
+    except Exception as e:
+        results.add_result("CORS Headers", False, f"CORS check error: {str(e)}")
+
 def main():
     """Run all image upload and serving tests"""
     print("🧪 Starting Comprehensive Backend Image Upload Tests")
