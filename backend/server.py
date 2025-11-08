@@ -737,7 +737,7 @@ async def get_ideas(
     page: int = 1,
     per_page: int = 20
 ):
-    query = {"parent_id": None}
+    query = {"parent_id": None, "is_draft": {"$ne": True}}  # Exclude drafts by default
     
     if q:
         query["$or"] = [{"title": {"$regex": q, "$options": "i"}}, {"body": {"$regex": q, "$options": "i"}}]
