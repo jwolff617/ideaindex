@@ -22,7 +22,9 @@ const Settings = () => {
     replies_in_feed: 2,
     dark_mode: false,
     email_notifications: true,
-    feed_density: 'comfortable'
+    feed_density: 'comfortable',
+    auto_spellcheck: true,
+    auto_generate_title: true
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
