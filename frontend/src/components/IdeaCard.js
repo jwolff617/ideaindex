@@ -47,7 +47,8 @@ const IdeaCard = ({ idea, onUpdate }) => {
       setUpvotes(response.data.upvotes);
       setDownvotes(response.data.downvotes);
       
-      if (onUpdate) onUpdate();
+      // Don't refresh feed - local state update is sufficient
+      // This keeps user at current scroll position
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to vote');
     } finally {
