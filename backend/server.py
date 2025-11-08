@@ -498,10 +498,6 @@ async def promote_to_level_one(
     
     return new_idea_dict
 
-        return {"title": fallback_title}
-
-    return user_doc.get('settings', {})
-
 
 @api_router.get("/url-preview")
 async def get_url_preview(url: str):
