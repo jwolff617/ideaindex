@@ -9,17 +9,13 @@ import { Label } from './ui/label';
 
 const AuthModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     username: '',
     email: '',
     password: ''
   });
-  const [resetEmail, setResetEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
 
