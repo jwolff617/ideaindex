@@ -754,6 +754,75 @@ async def create_idea(
     
     return idea
 
+
+@api_router.put("/ideas/{idea_id}")
+async def edit_idea(
+    idea_id: str,
+    title: Optional[str] = Form(None),
+    body: Optional[str] = Form(None),
+    category_id: Optional[str] = Form(None),
+    tags: Optional[str] = Form(None),
+    user: User = Depends(check_email_verified)
+):
+    """Edit an existing idea (only by the author)"""
+    idea = await db.ideas.find_one({"id": idea_id})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Check if user is the author
+    if idea['author_id'] != user.id:
+        raise HTTPException(status_code=403, detail="You can only edit your own ideas")
+    
+    # Update fields
+    update_data = {"updated_at": datetime.now(timezone.utc)}
+    
+    if title is not None:
+        update_data['title'] = title
+    if body is not None:
+        update_data['body'] = body
+    if category_id is not None:
+        update_data['category_id'] = category_id
+        # Get category name
+        category = await db.categories.find_one({"id": category_id}, {"_id": 0})
+        if category:
+            update_data['category'] = category['name']
+    if tags is not None:
+        tag_list = [t.strip().lower() for t in tags.split(',') if t.strip()]
+        update_data['tags'] = tag_list
+    
+    # Convert datetime for MongoDB
+    update_data['updated_at'] = update_data['updated_at'].isoformat()
+    
+    await db.ideas.update_one({"id": idea_id}, {"$set": update_data})
+    
+    # Return updated idea
+    updated_idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if isinstance(updated_idea.get('created_at'), str):
+        updated_idea['created_at'] = datetime.fromisoformat(updated_idea['created_at'])
+    if isinstance(updated_idea.get('updated_at'), str):
+        updated_idea['updated_at'] = datetime.fromisoformat(updated_idea['updated_at'])
+    
+    return updated_idea
+
+@api_router.delete("/ideas/{idea_id}")
+async def delete_idea(
+    idea_id: str,
+    user: User = Depends(check_email_verified)
+):
+    """Delete an idea (only by the author)"""
+    idea = await db.ideas.find_one({"id": idea_id})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Check if user is the author
+    if idea['author_id'] != user.id:
+        raise HTTPException(status_code=403, detail="You can only delete your own ideas")
+    
+    # Delete the idea and all its comments
+    await db.ideas.delete_many({"$or": [{"id": idea_id}, {"parent_id": idea_id}]})
+    
+    return {"message": "Idea deleted successfully"}
+
 @api_router.get("/ideas/{idea_id}")
 async def get_idea(idea_id: str):
     idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
