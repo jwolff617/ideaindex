@@ -36,6 +36,72 @@ const LeaderProfile = () => {
     }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast.error('Image must be less than 10MB');
+        return;
+      }
+      setSelectedFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !token) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    try {
+      const response = await axios.post(`${API}/upload-profile-picture`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      toast.success('Profile picture updated successfully!');
+      
+      // Update leader state with new avatar
+      setLeader({ ...leader, avatar_url: response.data.avatar_url });
+      
+      // Clear selection
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById('avatar-upload');
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Upload failed:', error);
+      toast.error(error.response?.data?.detail || 'Failed to upload profile picture');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleCancelUpload = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    const fileInput = document.getElementById('avatar-upload');
+    if (fileInput) fileInput.value = '';
+  };
+
+  const isOwnProfile = user && leader && user.username === leader.username;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
