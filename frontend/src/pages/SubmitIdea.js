@@ -95,13 +95,17 @@ const SubmitIdea = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log('Form data:', formData);
+    console.log('Selected images:', selectedImages);
+
     // Require title and either body text or images
-    if (!formData.title.trim()) {
+    if (!formData.title || !formData.title.trim()) {
+      console.error('Title validation failed:', formData.title);
       toast.error('Title is required');
       return;
     }
 
-    if (!formData.body.trim() && selectedImages.length === 0) {
+    if ((!formData.body || !formData.body.trim()) && selectedImages.length === 0) {
       toast.error('Please add some text or an image');
       return;
     }
