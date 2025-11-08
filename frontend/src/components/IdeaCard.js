@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
+import { Input } from './ui/input';
 import { formatDistanceToNow } from 'date-fns';
 import { TextWithURLPreviews } from './URLPreview';
 
