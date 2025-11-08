@@ -586,7 +586,7 @@ const IdeaCard = ({ idea }) => {
                     disabled={replying}
                     className="bg-emerald-600 hover:bg-emerald-700"
                   >
-                    {replying ? 'Posting...' : (postAsNewIdea ? 'Create Level 1' : 'Reply')}
+                    {replying ? 'Posting...' : 'Post'}
                   </Button>
                 </div>
               </div>
