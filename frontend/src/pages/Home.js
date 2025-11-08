@@ -354,7 +354,7 @@ const Home = () => {
           ) : (
             <div className="space-y-4" data-testid="ideas-list">
               {ideas.map((idea) => (
-                <IdeaCard key={idea.id} idea={idea} onUpdate={fetchIdeas} />
+                <IdeaCard key={idea.id} idea={idea} />
               ))}
             </div>
           )
