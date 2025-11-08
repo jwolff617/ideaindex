@@ -10,7 +10,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { formatDistanceToNow } from 'date-fns';
 
-const IdeaCard = ({ idea, onUpdate }) => {
+const IdeaCard = ({ idea }) => {
   const navigate = useNavigate();
   const { user, token, setShowAuthModal } = useContext(AuthContext);
   const [upvotes, setUpvotes] = useState(idea.upvotes || 0);
