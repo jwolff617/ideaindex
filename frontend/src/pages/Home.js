@@ -77,6 +77,26 @@ const Home = () => {
     }
   }, [searchQuery, selectedCategories, selectedCity, sortBy]);
 
+  // Refresh feed when page becomes visible (when navigating back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Page became visible, refresh the feed
+        if (sortBy === 'leaders') {
+          fetchLeaders();
+        } else {
+          fetchIdeas();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [sortBy]);
+
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`${API}/categories`);
